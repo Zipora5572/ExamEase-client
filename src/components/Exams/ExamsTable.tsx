@@ -9,7 +9,7 @@ import ModalWrapper from "../ModalWrapper"
 import useModal from "../../hooks/useModal"
 import NoDocuments from "../NoDocuments"
 interface ExamTableProps {
-    exams: ExamFileType[]
+    exams: ExamFileType[]|null
     folders: ExamFolderType[]
     loading: boolean
     currentFolderId: number | null
@@ -39,10 +39,10 @@ const ExamTable: React.FC<ExamTableProps> = ({
 
     useEffect(() => {
         if (viewMode === "folder" && currentFolderId !== null) {
-            setFilteredExams(exams.filter((exam) => exam.folderId === currentFolderId))
+            setFilteredExams(exams ? exams.filter((exam) => exam.folderId === currentFolderId) : [])
             setFilteredFolders(folders.filter((folder) => folder.parentFolderId === currentFolderId && folder.ofTeacherExams))
         } else {
-            setFilteredExams(exams.filter((exam) => exam.folderId === null))
+            setFilteredExams(exams ? exams.filter((exam) => exam.folderId === null) : [])
             setFilteredFolders(folders.filter((folder) => folder.parentFolderId === null && folder.ofTeacherExams))
         }
     }, [viewMode, currentFolderId, exams, folders])

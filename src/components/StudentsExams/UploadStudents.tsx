@@ -3,9 +3,8 @@
 import type React from "react"
 
 import { useState, useRef } from "react"
-import { useDispatch } from "react-redux"
-import type { AppDispatch } from "../../store/store"
-import { getAllExams } from "../../store/examSlice"
+import { useDispatch, useSelector } from "react-redux"
+import type { AppDispatch, StoreType } from "../../store/store"
 import StudentService from "../../services/StudentService"
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -26,7 +25,7 @@ const UploadStudents: React.FC<UploadStudentsProps> = ({ examId, onClose, onSucc
   const [uploadStatus, setUploadStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
-
+  const user = useSelector((state: StoreType) => state.auth.user)
   const dispatch = useDispatch<AppDispatch>()
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +85,7 @@ const UploadStudents: React.FC<UploadStudentsProps> = ({ examId, onClose, onSucc
       setUploadStatus("success")
 
       // Refresh exam data
-      dispatch(getAllExams())
+      dispatch(getAllExamsByUserId(user?.id))
 
       // Call success callback if provided
       if (onSuccess) {

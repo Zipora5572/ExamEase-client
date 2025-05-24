@@ -21,13 +21,15 @@ const SidebarContext = createContext<SidebarContextType>({
 export const useSidebarContext = () => useContext(SidebarContext)
 
 export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [showSidebar, setShowSidebar] = useState(true)
+  const [showSidebar, setShowSidebar] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const location = useLocation()
 
   // Determine if we should show the sidebar based on the route
   useEffect(() => {
     const publicRoutes = ["/", "/about", "/home", "/authForm"]
+    console.log(location.pathname);
+    
     const shouldShowSidebar = !publicRoutes.includes(location.pathname)
     setShowSidebar(shouldShowSidebar)
   }, [location])

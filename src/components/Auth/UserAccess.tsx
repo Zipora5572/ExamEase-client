@@ -1,7 +1,5 @@
 import { useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
-
-
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -23,16 +21,15 @@ interface UserMenuProps {
 
 const UserAccess = ({ user }: UserMenuProps) => {
   const dispatch = useDispatch<AppDispatch>()
-
-
   const handleLogout = () => {
     dispatch(logout())
   }
 
 
   const getInitials = () => {
-    return `${user.firstName?.charAt(0).toUpperCase() || ""}${user.lastName?.charAt(0).toUpperCase() || ""}` || "U"
+    return `${user.firstName?.charAt(0).toUpperCase() || ""}${user.lastName?.charAt(0).toUpperCase() || ""}` 
   }
+
 
   return (
     <DropdownMenu>
@@ -69,7 +66,6 @@ const UserAccess = ({ user }: UserMenuProps) => {
           <LogOut className="h-4 w-4" />
           Log out
         </DropdownMenuItem>
-
       </DropdownMenuContent>
     </DropdownMenu>
   )

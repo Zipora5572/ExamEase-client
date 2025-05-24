@@ -39,6 +39,17 @@ export default {
             console.error("Error fetch folders ",error)
         }
     },
+    getAllFoldersByUserId: async (userId:number|undefined) => {
+        try {
+
+            const response = await axios.get(`/folder/user/${userId}`);
+         
+            
+            return response.data;
+        } catch (error) {
+            console.error("Error fetch folders ",error)
+        }
+    },
     renameFolder: async (id: number, newName: string) => {
         try {
             const response = await axios.patch(`/folder/rename/${id}`, newName, {

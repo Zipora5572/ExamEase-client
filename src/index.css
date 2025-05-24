@@ -115,6 +115,8 @@
     @apply border-border outline-ring/50;
   }
   body {
+    margin: 0;
+    background-color: #f9fafb;
     @apply bg-background text-foreground;
   }
 }

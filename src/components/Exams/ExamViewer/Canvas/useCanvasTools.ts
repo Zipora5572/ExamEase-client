@@ -14,8 +14,7 @@ export const useCanvasTools = (selectedTemplate: string | null, position: { x: n
     const stage = e.target.getStage()
     const point = stage.getPointerPosition()
 
-    // Store points in image coordinates (not screen coordinates)
-    // This ensures consistent drawing regardless of zoom/pan
+    // Ensure precise coordinate transformation
     const imageX = (point.x - position.x) / zoom
     const imageY = (point.y - position.y) / zoom
 
@@ -28,7 +27,7 @@ export const useCanvasTools = (selectedTemplate: string | null, position: { x: n
     const stage = e.target.getStage()
     const point = stage.getPointerPosition()
 
-    // Convert to image coordinates
+    // Ensure precise coordinate transformation
     const imageX = (point.x - position.x) / zoom
     const imageY = (point.y - position.y) / zoom
 
@@ -47,7 +46,7 @@ export const useCanvasTools = (selectedTemplate: string | null, position: { x: n
     const stage = e.target.getStage()
     const point = stage.getPointerPosition()
 
-    // Convert to image coordinates
+    // Ensure precise coordinate transformation
     const imageX = (point.x - position.x) / zoom
     const imageY = (point.y - position.y) / zoom
 

@@ -69,15 +69,14 @@ export default {
             console.error("Error fetch exams ",error)
         }
     },
-    getAllFolders: async () => {
+    getAllExamsByUserId: async(userId:number|undefined) => {
         try {
 
-            const response = await axios.get('/folder');
-         
+            const response = await axios.get(`exam/user/${userId}`);
             
             return response.data;
         } catch (error) {
-            console.error("Error fetch folders ",error)
+            console.error("Error fetch exams ",error)
         }
     },
     renameExamFile: async (id: number, newName: string) => {

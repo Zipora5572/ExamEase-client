@@ -2,9 +2,9 @@
 
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
-import { useDispatch } from "react-redux"
-import type { AppDispatch } from "../../store/store"
-import { deleteExamFile, getAllExams, renameExamFile } from "../../store/examSlice"
+import { useDispatch, useSelector } from "react-redux"
+import type { AppDispatch, StoreType } from "../../store/store"
+import { deleteExamFile, getAllExamsByUserId, renameExamFile } from "../../store/examSlice"
 import { deleteFolder, renameFolder } from "../../store/folderSlice"
 import StudentExamService from "../../services/StudentExamService"
 import ExamService from "../../services/ExamService"
@@ -59,6 +59,7 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
   const [uploadError, setUploadError] = useState<string | null>(null)
 
   const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector((state: StoreType) => state.auth.user)
   const selectedFilesRef = useRef<FileList | null>(null)
 
   useEffect(() => {
@@ -75,7 +76,6 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
     if (event.target.files && event.target.files.length > 0) {
       const files = event.target.files
       setSelectedFiles(files)
-      console.log(event.target.id)
 
       if (event.target.id.includes("student-file") || event.target.id.includes("folder-input")) {
         setShowLanguageDialog(true)
@@ -233,7 +233,7 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
         try {
           await StudentService.uploadStudentList({ examId: row.id }, filesToUpload[0])
           // setStudentListUploaded(true)
-          dispatch(getAllExams())
+          dispatch(getAllExamsByUserId(user?.id))
           handleMenuClose()
         } catch (error) {
           console.error("Error uploading student list:", error)
@@ -342,7 +342,8 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
         },
         files,
       )
-      dispatch(getAllExams())
+      dispatch(getAllExamsByUserId(user?.id))
+
       handleMenuClose()
     } catch (error) {
       console.error("Error uploading student exams:", error)

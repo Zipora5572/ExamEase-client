@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "../store/store"
-import { getAllExams } from "../store/examSlice"
+import {  getAllExamsByUserId } from "../store/examSlice"
 import { getStudentExamsByExamId } from "../store/studentExamSlice"
 // import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -39,13 +39,13 @@ const Statistics = () => {
 
   const dispatch = useDispatch<AppDispatch>()
   // const { toast } = useToast()
-
+  const user = useSelector((state: StoreType) => state.auth.user)
   const exams = useSelector((state: StoreType) => state.exams.exams)
-  const studentExams = useSelector((state: StoreType) => state.studentExams.exams)
+  const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
   const loading = useSelector((state: StoreType) => state.studentExams.loading)
 
   useEffect(() => {
-    dispatch(getAllExams())
+    dispatch(getAllExamsByUserId(user?.id))
   }, [dispatch])
 
   useEffect(() => {

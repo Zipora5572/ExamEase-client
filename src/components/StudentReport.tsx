@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "../store/store"
-import { getAllExams } from "../store/examSlice"
+import {  getAllExamsByUserId } from "../store/examSlice"
 import { getStudentExamsByExamId } from "../store/studentExamSlice"
 import { Line, Radar } from "react-chartjs-2"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,11 +40,11 @@ const StudentReport = () => {
   // const { toast } = useToast()
 
   const exams = useSelector((state: StoreType) => state.exams.exams)
-  const studentExams = useSelector((state: StoreType) => state.studentExams.exams)
+  const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
   const loading = useSelector((state: StoreType) => state.studentExams.loading)
-
+  const user = useSelector((state: StoreType) => state.auth.user)
   useEffect(() => {
-    dispatch(getAllExams())
+    dispatch(getAllExamsByUserId(user?.id))
   }, [dispatch])
 
   useEffect(() => {

@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { login } from "../../store/userSlice"
-import { Mail, Lock, ArrowRight } from "lucide-react"
+import { Mail, Lock, ArrowRight, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -74,16 +74,40 @@ const SignUpForm = ({ setError }: SignUpFormProps) => {
     <form onSubmit={handleSignUp} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="firstName">First Name</Label>
-          <Input id="firstName" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+          <Label htmlFor="firstName" className="text-sm font-medium">
+            First Name
+          </Label>
+          <div className="relative">
+            <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="firstName"
+              placeholder="John"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
+            />
+          </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input id="lastName" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+          <Label htmlFor="lastName" className="text-sm font-medium">
+            Last Name
+          </Label>
+          <div className="relative">
+            <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id="lastName"
+              placeholder="Doe"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
+            />
+          </div>
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="SignUpEmail">Email</Label>
+        <Label htmlFor="SignUpEmail" className="text-sm font-medium">
+          Email
+        </Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
@@ -92,12 +116,14 @@ const SignUpForm = ({ setError }: SignUpFormProps) => {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
           />
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="SignUpPassword">Password</Label>
+        <Label htmlFor="SignUpPassword" className="text-sm font-medium">
+          Password
+        </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
@@ -106,12 +132,14 @@ const SignUpForm = ({ setError }: SignUpFormProps) => {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
           />
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Label htmlFor="confirmPassword" className="text-sm font-medium">
+          Confirm Password
+        </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
@@ -120,11 +148,11 @@ const SignUpForm = ({ setError }: SignUpFormProps) => {
             placeholder="••••••••"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
           />
         </div>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full h-10 bg-red-600 hover:bg-red-700 transition-colors" disabled={isLoading}>
         {isLoading ? "Creating Account..." : "Create Account"}
         <ArrowRight className="ml-2 h-4 w-4" />
       </Button>

@@ -41,6 +41,17 @@ export const getAllExams = createAsyncThunk(
         }
     }
 );
+export const getAllExamsByUserId = createAsyncThunk(
+    'exams/getAllExamsByUserId',
+    async (userId:number|undefined, thunkAPI) => {
+        try {
+            const response = await examService.getAllExamsByUserId(userId);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message || 'Failed to fetch exams');
+        }
+    }
+);
 
 export const renameExamFile = createAsyncThunk(
     'exams/renameExamFile',
@@ -114,6 +125,18 @@ const examSlice = createSlice({
                 state.exams = action.payload; 
             })
             .addCase(getAllExams.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(getAllExamsByUserId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAllExamsByUserId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.exams = action.payload; 
+            })
+            .addCase(getAllExamsByUserId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })

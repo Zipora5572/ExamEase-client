@@ -1,11 +1,8 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation } from "react-router-dom"
 import type { AppDispatch, StoreType } from "../../store/store"
-import { getAllExams } from "../../store/examSlice"
-import { getAllFolders } from "../../store/folderSlice"
+import { getAllExamsByUserId } from "../../store/examSlice"
 import useModal from "../../hooks/useModal"
 import ModalWrapper from "../ModalWrapper"
 import ActionButtons from "../ActionButtons"
@@ -13,13 +10,13 @@ import ExamsTable from "./ExamsTable"
 import { ChevronLeft, Search } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
+import { getAllFoldersByUserId } from "@/store/folderSlice"
 
 const ExamList = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector((state: StoreType) => state.auth.user)
   const exams = useSelector((state: StoreType) => state.exams.exams)
-  
   const folders = useSelector((state: StoreType) => state.folders.folders)
-
   const loading = useSelector((state: StoreType) => state.exams.loading)
   const error = useSelector((state: StoreType) => state.exams.error)
   const { isOpen, openModal, closeModal, modalData } = useModal()
@@ -29,11 +26,10 @@ const ExamList = () => {
   const location = useLocation()
   const filter = new URLSearchParams(location.search).get("filter") || "all"
   const [searchQuery, setSearchQuery] = useState("")
-  const filteredExams = exams.filter((exam) => {
+  const filteredExams = exams?.filter((exam) => {
     if (filter === "shared") return exam.isShared
     if (filter === "starred") return exam.isStarred
     if (searchQuery) return exam.name.toLowerCase().includes(searchQuery.toLowerCase())
-
     return true
   })
 
@@ -44,9 +40,11 @@ const ExamList = () => {
   })
 
   useEffect(() => {
-    dispatch(getAllFolders())
-    dispatch(getAllExams())
-  }, [dispatch])
+    if (user?.id) {
+      dispatch(getAllFoldersByUserId(user?.id))
+      dispatch(getAllExamsByUserId(user?.id))
+    }
+  }, [user])
 
   const handleGoBack = () => {
     if (folderPath.length > 0) {
@@ -75,9 +73,8 @@ const ExamList = () => {
                     setFolderPath([])
                     setCurrentFolderId(null)
                   }}
-                  className={`text-sm font-medium ${
-                    folderPath.length === 0 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`text-sm font-medium ${folderPath.length === 0 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   Your Exams
                 </button>
@@ -91,9 +88,8 @@ const ExamList = () => {
                       setFolderPath(folderPath.slice(0, index + 1))
                       setCurrentFolderId(folder.id)
                     }}
-                    className={`text-sm font-medium ${
-                      index === folderPath.length - 1 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    className={`text-sm font-medium ${index === folderPath.length - 1 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+                      }`}
                   >
                     {folder.name}
                   </button>
@@ -118,7 +114,7 @@ const ExamList = () => {
             folderId={currentFolderId}
             folderName={currentFolderName || "ראשי"}
             openModal={openModal}
-            // modalData={modalData}
+          // modalData={modalData}
           />
         </div>
       </div>
@@ -156,7 +152,7 @@ const ExamList = () => {
         onConfirm={modalData?.onConfirm}
         confirmText={modalData?.confirmText}
         initialName={modalData?.initialName}
-        setNewName={ (() => {})}
+        setNewName={(() => { })}
       >
         {modalData?.children}
       </ModalWrapper>

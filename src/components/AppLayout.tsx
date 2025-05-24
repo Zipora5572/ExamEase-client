@@ -18,6 +18,16 @@ const AppLayout = () => {
   const { showSidebar } = useSidebarContext()
 
   useEffect(() => {
+    const cookies = document.cookie.split("; ");
+    const tokenCookie = cookies.find(row => row.startsWith("JWT="));
+    const token = tokenCookie ? tokenCookie.split("=")[1] : null;
+    if (token) {
+      dispatch(checkAuth());
+    }
+  }, [dispatch,user]);
+  
+
+  useEffect(() => {
     if (user == null || user === initialUserState) dispatch(checkAuth())
   }, [dispatch, user])
 
@@ -25,7 +35,7 @@ const AppLayout = () => {
   const isPublicPage = ["/", "/about", "/home", "/authForm"].includes(location.pathname)
 
   return (
-    <div className="flex h-screen flex-col bg-[#f0f0f0]">
+    <div className="flex h-screen flex-col bg-[#f9fafb]">
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - full height */}
         {showSidebar && !isPublicPage && <Sidebar />}
@@ -36,7 +46,7 @@ const AppLayout = () => {
           <Header isPublicPage={isPublicPage} />
 
           {/* Main content */}
-          <main className="flex-1 overflow-auto p-4">
+          <main className="flex-1 overflow-auto p-10">
             <Outlet />
           </main>
         </div>

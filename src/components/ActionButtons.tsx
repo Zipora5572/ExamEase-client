@@ -49,7 +49,7 @@ name
           <input
             type="text"
             placeholder="Folder Name"
-            className="block w-full rounded-md border-gray-300 shadow-sm  sm:text-sm"
+            className="block w-full rounded-md border-gray-300  sm:text-sm"
            
           />
         </div>

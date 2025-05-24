@@ -81,6 +81,7 @@ uploadCorrectedImage: async (studentExamId: number, formData: FormData) => {
     },
 
 
+
     getStudentExamsByExamId: async (examId: number) => {
         try {
             const response = await axios.get(`studentExam/exam/${examId}`);
@@ -93,6 +94,20 @@ uploadCorrectedImage: async (studentExamId: number, formData: FormData) => {
         }
     },
 
+    getStudentExamsByUserId: async (userId: number) => {
+        try {
+            console.log(userId);
+            
+            const response = await axios.get(`studentExam/user/${userId}`);
+console.log(response.data);
+
+
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching student exams for exam ID ${userId}:`, error);
+            throw error;
+        }
+    },
 
     addStudentExam: async (studentExam: Partial<StudentExamType>) => {
         try {

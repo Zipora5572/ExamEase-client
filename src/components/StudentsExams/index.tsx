@@ -66,7 +66,7 @@ const StudentsExams = () => {
     }
   }
 
-  const studentExams = useSelector((state: StoreType) => state.studentExams.exams)
+  const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
   const loading = useSelector((state: StoreType) => state.studentExams.loading)
 
   const handleOpenUploadStudents = () => {

@@ -51,8 +51,8 @@ export default function Sidebar() {
   }, [location])
 
   const getInitials = () => {
-    if (!user) return "U"
-    return `${user.firstName?.charAt(0).toUpperCase() || ""}${user.lastName?.charAt(0) || ""}` || "U"
+    // if (!user) return "U"
+    return `${user?.firstName?.charAt(0).toUpperCase() || ""}${user?.lastName?.charAt(0) || ""}`
   }
 
   const handleNavigate = (path: string) => {
@@ -66,9 +66,9 @@ export default function Sidebar() {
   const sectionButton = (label: string, icon: React.ReactNode, section: string) => (
     <button
       onClick={() => toggleSection(section)}
-      className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+      className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         {icon}
         {!isCollapsed && <span>{label}</span>}
       </div>
@@ -80,8 +80,8 @@ export default function Sidebar() {
   const navButton = (label: string, icon: React.ReactNode, path: string, isActive: boolean) => (
     <button
       onClick={() => handleNavigate(path)}
-      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm ${
-        isActive ? "bg-gray-100 font-medium text-gray-900" : "text-gray-700 hover:bg-gray-50"
+      className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm transition-colors ${
+        isActive ? "bg-red-50 font-medium text-red-600" : "text-gray-700 hover:bg-gray-50"
       }`}
     >
       {icon}
@@ -91,22 +91,25 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`h-full border-r border-gray-200 bg-white ${isCollapsed ? "w-16" : "w-64"} flex flex-col transition-all duration-200`}
+      className={`h-full border-r border-gray-200 bg-white ${isCollapsed ? "w-16" : "w-64"} flex flex-col transition-all duration-200 `}
     >
       {/* Logo at the top of sidebar */}
-      <div className="flex items-center p-4 border-b border-gray-200">
-        <Link to="/" className="flex items-center gap-2 flex-1">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white">
+      <div className="flex items-center p-4 border-b border-gray-200 relative">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white shadow-sm">
             <GraduationCap className="h-5 w-5" />
           </div>
           {!isCollapsed && <span className="text-xl font-bold text-red-600">ExamEase</span>}
         </Link>
-        <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-1 text-gray-600 hover:text-gray-900">
-          {isCollapsed ? <ExpandIcon className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors absolute right-3 top-4"
+        >
+          {isCollapsed ? <ExpandIcon className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto p-3 space-y-1.5">
         {navButton(
           "Dashboard",
           <LayoutDashboard className="h-4 w-4" />,
@@ -114,11 +117,11 @@ export default function Sidebar() {
           currentPath.includes("/app/dashboard"),
         )}
 
-        <div>
+        <div className="pt-1.5">
           {sectionButton("Exams", <FileText className="h-4 w-4" />, "exams")}
 
           {openSections.exams && !isCollapsed && (
-            <div className="ml-6 mt-1 space-y-1">
+            <div className="ml-6 mt-1.5 space-y-1">
               {navButton(
                 "Your Exams",
                 <FolderOpen className="h-4 w-4" />,
@@ -148,11 +151,11 @@ export default function Sidebar() {
           )}
         </div>
 
-        <div>
+        <div className="pt-1.5">
           {sectionButton("Students", <Users className="h-4 w-4" />, "students")}
 
           {openSections.students && !isCollapsed && (
-            <div className="ml-6 mt-1 space-y-1">
+            <div className="ml-6 mt-1.5 space-y-1">
               {navButton(
                 "All Students",
                 <Users className="h-4 w-4" />,
@@ -175,11 +178,11 @@ export default function Sidebar() {
           )}
         </div>
 
-        <div>
+        <div className="pt-1.5">
           {sectionButton("Reports", <BarChart className="h-4 w-4" />, "reports")}
 
           {openSections.reports && !isCollapsed && (
-            <div className="ml-6 mt-1 space-y-1">
+            <div className="ml-6 mt-1.5 space-y-1">
               {navButton(
                 "Grades Overview",
                 <FileBarChart className="h-4 w-4" />,
@@ -210,17 +213,17 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8 border border-gray-200 shadow-sm">
             {/* <AvatarImage src={user?.profilePicture || ""} alt={user?.firstName || "User"} /> */}
-            <AvatarFallback className="bg-gray-100 text-gray-500">{getInitials()}</AvatarFallback>
+            <AvatarFallback className="bg-red-100 text-red-600 font-medium">{getInitials()}</AvatarFallback>
           </Avatar>
 
           {!isCollapsed && (
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700">{`${user?.firstName || ""} ${user?.lastName || ""}`}</p>
-              <p className="text-xs text-gray-500">{user?.email}</p>
+              <p className="text-sm font-medium text-gray-800">{`${user?.firstName || ""} ${user?.lastName || ""}`}</p>
+              <p className="text-xs text-gray-500 truncate max-w-[180px]">{user?.email}</p>
             </div>
           )}
         </div>

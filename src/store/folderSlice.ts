@@ -36,7 +36,7 @@ export const getAllFolders = createAsyncThunk(
         try {
           
             
-            const response = await examService.getAllFolders();
+            const response = await folderService.getAllFolders();
       
       
             return response;
@@ -45,7 +45,17 @@ export const getAllFolders = createAsyncThunk(
         }
     }
 );
-
+export const getAllFoldersByUserId = createAsyncThunk(
+    'exams/getAllFoldersByUserId',
+    async (userId:number|undefined, thunkAPI) => {
+        try {
+            const response = await folderService.getAllFoldersByUserId(userId);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message || 'Failed to fetch exams');
+        }
+    }
+);
 
 export const renameFolder = createAsyncThunk(
     'exams/renameFolder',
@@ -132,6 +142,18 @@ const folderSlice = createSlice({
                 state.folders = action.payload;
             })
             .addCase(getAllFolders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(getAllFoldersByUserId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAllFoldersByUserId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.folders = action.payload;
+            })
+            .addCase(getAllFoldersByUserId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })

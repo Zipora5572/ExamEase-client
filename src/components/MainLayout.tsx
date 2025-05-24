@@ -15,7 +15,7 @@ const MainLayout = () => {
     if (user == null || user === initialUserState) dispatch(checkAuth())
   }, [dispatch, user])
   return (
-    <div className="flex h-screen flex-col bg-[#f0f0f0]">
+    <div className="flex h-screen flex-col bg-[#f9fafb]">
       <Header isPublicPage={false} />
       <main className="flex-1 overflow-auto p-4">
         <Outlet />

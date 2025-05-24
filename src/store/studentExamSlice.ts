@@ -2,17 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import StudentExamService from "../services/StudentExamService";
 import { StudentExamType } from '@/models/StudentExam';
 
-export const getAllStudentExams = createAsyncThunk(
-    'studentExams/getAllStudentExams',
-    async (_, thunkAPI) => {
-        try {
-            const response = await StudentExamService.getAllStudentExams();
-            return response;
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.message || 'Failed to fetch student exams');
-        }
-    }
-);
 
 export const getStudentExamById = createAsyncThunk(
     'studentExams/getStudentExamById',
@@ -72,29 +61,29 @@ export const getStudentExamsByExamId = createAsyncThunk(
         }
     }
 );
+export const getStudentExamsByUserId = createAsyncThunk(
+    'studentExams/getStudentExamsByUserId',
+    async (userId: number, thunkAPI) => {
+        try {
+            const response = await StudentExamService.getStudentExamsByUserId(userId);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message || 'Failed to fetch student exams by exam ID');
+        }
+    }
+);
 
 const studentExamsSlice = createSlice({
     name: 'studentExams',
     initialState: {
-        exams: [] as StudentExamType[],
+        examsByExamId: [] as StudentExamType[],
+        examsByUserId: [] as StudentExamType[],
         loading: false,
         error: null as string | null,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getAllStudentExams.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(getAllStudentExams.fulfilled, (state, action) => {
-                state.loading = false;
-                state.exams = action.payload;
-            })
-            .addCase(getAllStudentExams.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
             .addCase(getStudentExamById.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -113,7 +102,7 @@ const studentExamsSlice = createSlice({
             })
             .addCase(addStudentExam.fulfilled, (state, action) => {
                 state.loading = false;
-                state.exams.push(action.payload);
+                state.examsByExamId.push(action.payload);
             })
             .addCase(addStudentExam.rejected, (state, action) => {
                 state.loading = false;
@@ -126,9 +115,9 @@ const studentExamsSlice = createSlice({
             .addCase(updateStudentExam.fulfilled, (state, action) => {
                 state.loading = false;
                 const updatedExam = action.payload;
-                const index = state.exams.findIndex(exam => exam.id === updatedExam.id);
+                const index = state.examsByExamId.findIndex(exam => exam.id === updatedExam.id);
                 if (index !== -1) {
-                    state.exams[index] = updatedExam;
+                    state.examsByExamId[index] = updatedExam;
                 }
             })
             .addCase(updateStudentExam.rejected, (state, action) => {
@@ -141,7 +130,7 @@ const studentExamsSlice = createSlice({
             })
             .addCase(deleteStudentExam.fulfilled, (state, action) => {
                 state.loading = false;
-                state.exams = state.exams.filter(exam => exam.id !== action.payload.id);
+                state.examsByExamId = state.examsByExamId.filter(exam => exam.id !== action.payload.id);
             })
             .addCase(deleteStudentExam.rejected, (state, action) => {
                 state.loading = false;
@@ -153,9 +142,21 @@ const studentExamsSlice = createSlice({
             })
             .addCase(getStudentExamsByExamId.fulfilled, (state, action) => {
                 state.loading = false;
-                state.exams = action.payload; // עדכון המבחנים לפי התגובה
+                state.examsByExamId = action.payload; // עדכון המבחנים לפי התגובה
             })
             .addCase(getStudentExamsByExamId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(getStudentExamsByUserId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getStudentExamsByUserId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.examsByUserId = action.payload; // עדכון המבחנים לפי התגובה
+            })
+            .addCase(getStudentExamsByUserId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

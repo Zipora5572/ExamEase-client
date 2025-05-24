@@ -60,7 +60,9 @@ const LoginForm = ({ setError }: LoginFormProps) => {
   return (
     <form onSubmit={handleLogin} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="text-sm font-medium">
+          Email
+        </Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
@@ -69,14 +71,16 @@ const LoginForm = ({ setError }: LoginFormProps) => {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
           />
         </div>
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <a href="#" className="text-xs text-red-600 hover:underline">
+          <Label htmlFor="password" className="text-sm font-medium">
+            Password
+          </Label>
+          <a href="#" className="text-xs text-red-600 hover:text-red-700 hover:underline transition-colors">
             Forgot password?
           </a>
         </div>
@@ -88,25 +92,29 @@ const LoginForm = ({ setError }: LoginFormProps) => {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 border-gray-200 focus-visible:ring-red-500 focus-visible:border-red-500"
           />
         </div>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full h-10 bg-red-600 hover:bg-red-700 transition-colors" disabled={isLoading}>
         {isLoading ? "Signing in..." : "Sign In"}
         <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
 
-      <div className="relative">
+      <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <Separator />
+          <Separator className="w-full" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-white px-2 text-gray-500">Or continue with</span>
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" onClick={() => navigate("/app/dashboard")}>
+      <Button
+        variant="outline"
+        className="w-full h-10 border-gray-200 hover:bg-gray-50 transition-colors"
+        onClick={() => navigate("/app/dashboard")}
+      >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

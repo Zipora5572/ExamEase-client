@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react"
+"use client"
+
+import type React from "react"
+
+import { useEffect, useState } from "react"
 import { Stage, Layer } from "react-konva"
 import { Loader2 } from "lucide-react"
 import { DrawingLayer } from "./DrawingLayer"
@@ -7,6 +11,8 @@ import { ImageLayer } from "./ImageLayer"
 import { useCanvasGestures } from "./useCanvasGestures"
 import StudentExamService from "../../../../services/StudentExamService"
 import { useCanvasTools } from "./useCanvasTools"
+import { Check, X } from "lucide-react"
+import { log } from "console"
 
 interface ExamViewerCanvasProps {
   exam: any
@@ -17,7 +23,7 @@ interface ExamViewerCanvasProps {
   zoom: number
   position: { x: number; y: number }
   setPosition: (position: { x: number; y: number }) => void
-  updateGrade: () => void
+  updateGrade: (directGrade?: number) => void
   image: HTMLImageElement | null
   setImage: (image: HTMLImageElement | null) => void
   setZoom: (zoom: number) => void
@@ -25,6 +31,8 @@ interface ExamViewerCanvasProps {
   pointsPerQuestion: number
   questionWeights: Record<string, number>
   setQuestionWeights: (weights: Record<string, number>) => void
+  containerRef: React.RefObject<HTMLDivElement>
+  stageRef: React.RefObject<any>
 }
 
 const ExamViewerCanvas = ({
@@ -44,9 +52,9 @@ const ExamViewerCanvas = ({
   pointsPerQuestion,
   questionWeights,
   setQuestionWeights,
+  containerRef,
+  stageRef,
 }: ExamViewerCanvasProps) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const stageRef = useRef<any>(null)
   const [scoreDialogPosition, setScoreDialogPosition] = useState<{ x: number; y: number } | null>(null)
   const [currentMarkScore, setCurrentMarkScore] = useState<number>(0)
   const [currentMarkType, setCurrentMarkType] = useState<string | null>(null)
@@ -54,11 +62,12 @@ const ExamViewerCanvas = ({
   const [newMarkIndex, setNewMarkIndex] = useState<number | null>(null)
   const [isHoveringImage, setIsHoveringImage] = useState(false)
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null)
+  const [pendingMark, setPendingMark] = useState<any | null>(null)
 
   const {
     lines,
     currentLine,
-    isDrawing, 
+    isDrawing,
     setLines,
     handleDrawingStart,
     handleDrawingMove,
@@ -66,7 +75,7 @@ const ExamViewerCanvas = ({
     handleErase,
   } = useCanvasTools(selectedTemplate, position, zoom)
 
-  const {  handleWheel, handleDragStart, handleDragEnd, handleDragMove } = useCanvasGestures({
+  const { handleWheel, handleDragStart, handleDragEnd, handleDragMove } = useCanvasGestures({
     stageRef,
     zoom,
     position,
@@ -80,17 +89,29 @@ const ExamViewerCanvas = ({
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
         setContainerSize({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
+          width: rect.width || containerRef.current.offsetWidth,
+          height: rect.height || containerRef.current.offsetHeight,
         })
       }
     }
 
+    // Initial size update
     updateSize()
+
+    // Update size after a short delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(updateSize, 100)
+
+    // Add resize listener
     window.addEventListener("resize", updateSize)
-    return () => window.removeEventListener("resize", updateSize)
-  }, [])
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", updateSize)
+      clearTimeout(timeoutId)
+    }
+  }, [containerRef])
 
   // New image loading logic with signed URLs
   useEffect(() => {
@@ -136,7 +157,7 @@ const ExamViewerCanvas = ({
     }
 
     fetchImageWithSignedUrl()
-  }, [exam?.examPath, setImage, setLoadingImage, setPosition, setZoom])
+  }, [exam?.examPath, setImage, setLoadingImage, setPosition, setZoom, containerRef])
 
   // Handle erasing marks
   const handleEraseMarks = (e: any) => {
@@ -168,12 +189,22 @@ const ExamViewerCanvas = ({
 
     // If we removed any marks, update the state
     if (updatedMarks.length !== markedAnswers.length) {
+      console.log('delete');
+  
       setMarkedAnswers(updatedMarks)
-      updateGrade()
+      let newGrade = 0
+      updatedMarks.forEach((mark) => {
+        if (mark.type === "correct" && mark.score) {
+          newGrade += mark.score
+        }
+      })
+
+      updateGrade(Math.max(0, newGrade))
     }
   }
 
-  // Handle template placement (checkmark, x, circle)
+  // Fix panel positioning to appear next to the marked answer
+  // Update the handleStageClick function to position the dialog better
   const handleStageClick = (e: any) => {
     if (
       !selectedTemplate ||
@@ -198,7 +229,7 @@ const ExamViewerCanvas = ({
 
     // Only show score dialog for correct/incorrect marks
     if (selectedTemplate === "correct" || selectedTemplate === "incorrect") {
-      // Create a new mark
+      // Create a pending mark (not yet added to markedAnswers)
       const newMark = {
         id: questionId,
         type: selectedTemplate,
@@ -207,21 +238,44 @@ const ExamViewerCanvas = ({
         score: selectedTemplate === "correct" ? pointsPerQuestion : -pointsPerQuestion, // Default full points for correct, negative for incorrect
         questionValue: pointsPerQuestion, // Store the question's total value
         percentageScore: 100, // Default percentage (100% of the question value)
+        isPending: true, // Mark as pending until confirmed
       }
 
-      // Add to marked answers
-      const updatedAnswers = [...markedAnswers, newMark]
-      setMarkedAnswers(updatedAnswers)
-      setNewMarkIndex(updatedAnswers.length - 1)
+      // Store the pending mark
+      setPendingMark(newMark)
 
-      // Update question weights
-      const newWeights = { ...questionWeights, [questionId]: pointsPerQuestion }
-      setQuestionWeights(newWeights)
+      // Position the dialog right next to the click point
+      // Adjust based on the mark type to avoid covering the mark
+      let dialogX = pointerPosition.x
+      let dialogY = pointerPosition.y
 
-      // Show score dialog at the click position
+      // Offset the dialog to appear to the right of the mark
+      dialogX += 20
+
+      // Get container bounds
+      const containerRect = containerRef.current?.getBoundingClientRect()
+      if (containerRect) {
+        // Adjust X position if too close to right edge
+        const dialogWidth = 300 // Approximate dialog width
+        if (dialogX + dialogWidth > containerRect.width) {
+          // If not enough space on right, place it to the left of the mark
+          dialogX = pointerPosition.x - dialogWidth - 20
+        }
+
+        // If still not fitting, center it
+        if (dialogX < 0) {
+          dialogX = Math.min(containerRect.width - dialogWidth, Math.max(0, pointerPosition.x - dialogWidth / 2))
+        }
+
+        // Adjust Y position to center vertically with the mark
+        const dialogHeight = 200 // Approximate dialog height
+        dialogY = Math.min(containerRect.height - dialogHeight - 10, Math.max(10, pointerPosition.y - dialogHeight / 2))
+      }
+
+      // Show score dialog at the adjusted position
       setScoreDialogPosition({
-        x: pointerPosition.x,
-        y: pointerPosition.y,
+        x: dialogX,
+        y: dialogY,
       })
 
       // Set default score based on mark type
@@ -236,17 +290,12 @@ const ExamViewerCanvas = ({
         y: imageY,
       }
       setMarkedAnswers([...markedAnswers, newMark])
-      updateGrade()
     }
   }
 
-  // Handle score assignment
+  // Handle score assignment - FIXED LOGIC
   const handleScoreAssignment = (percentageScore: number) => {
-    if (newMarkIndex === null || !currentQuestionId) return
-
-    // Update the mark with the score
-    const updatedAnswers = [...markedAnswers]
-    const mark = updatedAnswers[newMarkIndex]
+    if (!pendingMark || !currentQuestionId) return
 
     // Calculate actual points based on percentage of question value
     let actualPoints = 0
@@ -259,22 +308,45 @@ const ExamViewerCanvas = ({
       actualPoints = -(percentageScore / 100) * pointsPerQuestion
     }
 
-    updatedAnswers[newMarkIndex] = {
-      ...mark,
+    // Create the final mark with the calculated score
+    const finalMark = {
+      ...pendingMark,
       score: actualPoints,
       percentageScore: percentageScore,
+      isPending: false,
     }
+
+    // Add the mark to markedAnswers
+    const updatedAnswers = [...markedAnswers, finalMark]
+    setMarkedAnswers(updatedAnswers)
 
     // Update question weights with the actual assigned value
     const newWeights = { ...questionWeights }
     newWeights[currentQuestionId] = Math.abs(actualPoints)
     setQuestionWeights(newWeights)
 
-    setMarkedAnswers(updatedAnswers)
+    // Clear pending state
+    setPendingMark(null)
     setScoreDialogPosition(null)
-    setNewMarkIndex(null)
     setCurrentQuestionId(null)
-    updateGrade()
+
+    // Calculate the new grade directly here to ensure immediate update
+    let newGrade = 0
+    updatedAnswers.forEach((mark) => {
+      if (mark.type === "correct" && mark.score) {
+        newGrade += mark.score
+      }
+    })
+
+    // Call updateGrade with the new calculated grade
+    updateGrade(Math.max(0, newGrade))
+  }
+
+  const handleCancelMark = () => {
+console.log("dele");
+    setPendingMark(null)
+    setScoreDialogPosition(null)
+    setCurrentQuestionId(null)
   }
 
   const getCursorStyle = () => {
@@ -298,27 +370,40 @@ const ExamViewerCanvas = ({
     }
   }
 
+  // Update container size when image loads
+  useEffect(() => {
+    if (image && !loadingImage && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      setContainerSize({
+        width: rect.width || containerRef.current.offsetWidth,
+        height: rect.height || containerRef.current.offsetHeight,
+      })
+    }
+  }, [image, loadingImage, containerRef])
+
+  // Fix the score dialog positioning to be relative to the container
+  // Update the score dialog rendering to use absolute positioning within the container
   return (
-    <div
-      ref={containerRef}
-      className="flex-1 relative bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
-      style={{ cursor: getCursorStyle() }}
-      onMouseEnter={() => setIsHoveringImage(true)}
-      onMouseLeave={() => setIsHoveringImage(false)}
-    >
-      {loadingImage ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
-          <div className="flex flex-col items-center">
-            <Loader2 className="h-8 w-8 animate-spin text-red-600" />
-            <p className="mt-2 text-sm text-gray-600">Loading exam...</p>
+    <>
+      <div
+        ref={containerRef}
+        className="flex-1 relative bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full h-full min-h-[500px]"
+        style={{ cursor: getCursorStyle() }}
+        onMouseEnter={() => setIsHoveringImage(true)}
+        onMouseLeave={() => setIsHoveringImage(false)}
+      >
+        {loadingImage ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+            <div className="flex flex-col items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+              <p className="mt-2 text-sm text-gray-600">Loading exam...</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <>
+        ) : (
           <Stage
             ref={stageRef}
-            width={containerSize.width}
-            height={containerSize.height}
+            width={Math.max(containerSize.width, 100)}
+            height={Math.max(containerSize.height, 100)}
             onWheel={handleWheel}
             draggable={selectedTemplate === "hand"}
             onDragStart={handleDragStart}
@@ -343,7 +428,7 @@ const ExamViewerCanvas = ({
           >
             <Layer>
               <ImageLayer image={image} position={position} zoom={zoom} />
-              <MarkingsLayer markedAnswers={markedAnswers} position={position} zoom={zoom} />
+              <MarkingsLayer markedAnswers={markedAnswers} pendingMark={pendingMark} position={position} zoom={zoom} />
               <DrawingLayer
                 lines={lines}
                 currentLine={currentLine}
@@ -353,33 +438,44 @@ const ExamViewerCanvas = ({
               />
             </Layer>
           </Stage>
+        )}
 
-          {/* Score Assignment Dialog */}
-          {scoreDialogPosition && (
-            <div
-              className="absolute bg-white shadow-lg rounded-md p-3 z-10 border border-gray-200"
-              style={{
-                left: scoreDialogPosition.x,
-                top: scoreDialogPosition.y,
-                transform: "translate(-50%, -100%)",
-              }}
-            >
-              <div className="text-sm font-medium mb-2">
-                {currentMarkType === "correct"
-                  ? `Assign percentage of ${pointsPerQuestion.toFixed(1)} points:`
-                  : `Deduct percentage of ${pointsPerQuestion.toFixed(1)} points:`}
-              </div>
+        {/* Score Assignment Dialog - Positioned absolutely within the container */}
+        {scoreDialogPosition && (
+          <div
+            className="absolute bg-white shadow-lg rounded-lg p-4 z-10 border border-gray-200 w-[300px]"
+            style={{
+              left: `${scoreDialogPosition.x}px`,
+              top: `${scoreDialogPosition.y}px`,
+              cursor: "default", // Override cursor to default when hovering over dialog
+            }}
+          >
+            <div className="text-sm font-medium mb-3 flex items-center justify-between">
+              {currentMarkType === "correct" ? (
+                <span className="text-green-600 flex items-center gap-1.5">
+                  <Check className="h-4 w-4" />
+                  Assign points
+                </span>
+              ) : (
+                <span className="text-red-600 flex items-center gap-1.5">
+                  <X className="h-4 w-4" />
+                  Deduct points
+                </span>
+              )}
+              <span className="text-gray-500">Max: {pointsPerQuestion.toFixed(1)}</span>
+            </div>
 
-              <div className="flex space-x-2 mb-3">
+            <div className="space-y-3">
+              <div className="flex space-x-2 mb-1">
                 {[25, 50, 75, 100].map((score) => (
                   <button
                     key={score}
-                    className={`px-2 py-1 rounded ${
+                    className={`flex-1 px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
                       currentMarkScore === score
                         ? currentMarkType === "correct"
                           ? "bg-green-600 text-white"
                           : "bg-red-600 text-white"
-                        : "bg-gray-100 hover:bg-gray-200"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                     }`}
                     onClick={() => setCurrentMarkScore(score)}
                   >
@@ -388,42 +484,34 @@ const ExamViewerCanvas = ({
                 ))}
               </div>
 
+              <div className="bg-gray-50 p-2 rounded-md text-center">
+                <span className="text-sm font-medium">
+                  {currentMarkType === "correct" ? "+" : "-"}
+                  {((currentMarkScore / 100) * pointsPerQuestion).toFixed(1)} points
+                </span>
+              </div>
+
               <div className="flex justify-between mt-3">
                 <button
-                  className="text-xs text-gray-500 hover:text-gray-700"
-                  onClick={() => {
-                    // Remove the mark if canceled
-                    if (newMarkIndex !== null) {
-                      setMarkedAnswers(markedAnswers.filter((_, i) => i !== newMarkIndex))
-
-                      // Remove from question weights
-                      if (currentQuestionId) {
-                        const newWeights = { ...questionWeights }
-                        delete newWeights[currentQuestionId]
-                        setQuestionWeights(newWeights)
-                      }
-                    }
-                    setScoreDialogPosition(null)
-                    setNewMarkIndex(null)
-                    setCurrentQuestionId(null)
-                  }}
+                  className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                  onClick={handleCancelMark}
                 >
                   Cancel
                 </button>
                 <button
                   className={`${
-                    currentMarkType === "correct" ? "bg-green-600" : "bg-red-600"
-                  } text-white px-3 py-1 rounded text-sm`}
+                    currentMarkType === "correct" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
+                  } text-white px-4 py-1.5 rounded-md text-sm font-medium transition-colors`}
                   onClick={() => handleScoreAssignment(currentMarkScore)}
                 >
                   Apply
                 </button>
               </div>
             </div>
-          )}
-        </>
-      )}
-    </div>
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 

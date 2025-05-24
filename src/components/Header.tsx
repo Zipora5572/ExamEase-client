@@ -34,9 +34,9 @@ const Header = ({ isPublicPage }: HeaderProps) => {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4">
+    <header >
       {/* Logo - only show when sidebar is not present or on public pages */}
-      {(!showSidebar || isPublicPage) && (
+      {(!showSidebar) && (
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white">
@@ -64,10 +64,11 @@ const Header = ({ isPublicPage }: HeaderProps) => {
       )}
 
       {/* Spacer when sidebar is present and not on public pages */}
-      {showSidebar && !isPublicPage && <div className="flex-1"></div>}
+      {!showSidebar && !isPublicPage && <div className="flex-1"></div>}
 
       {/* Action buttons */}
-      <HeaderActions isPublicPage={isPublicPage} user={user} handleCreateNew={handleCreateNew} />
+      {!showSidebar && 
+      <HeaderActions isPublicPage={isPublicPage} user={user} handleCreateNew={handleCreateNew} />}
     </header>
   )
 }

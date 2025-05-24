@@ -5,6 +5,7 @@ import NotificationsDropdown from "./NotificationsDropdown"
 import HelpCenter from "./HelpCenter"
 import UserMenu from "./Auth/UserAccess"
 import { UserType } from "@/models/User"
+import initialState from "@/models/authUser"
 
 interface HeaderActionsProps {
   isPublicPage: boolean
@@ -43,7 +44,7 @@ const HeaderActions = ({ isPublicPage, user, handleCreateNew }: HeaderActionsPro
       <NotificationsDropdown />
       <HelpCenter />
 
-      {user ? (
+      {user?.id ? (
         <UserMenu user={user} />
       ) : (
         <Link to="/authForm">

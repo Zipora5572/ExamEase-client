@@ -5,7 +5,7 @@ import type { ExamFileType, ExamFolderType } from "../../models/Exam"
 import ExamRowButtons from "./ExamRowButtons"
 import { formatDate } from "../../lib/utils"
 import { TableCell, TableRow } from "@/components/ui/table"
-import FileMenu from "./ExamMenu"
+import ExamMenu from "./ExamMenu"
 
 interface ExamDetailsRowProps {
   row: ExamFileType | ExamFolderType
@@ -99,7 +99,7 @@ const ExamDetailsRow: React.FC<ExamDetailsRowProps> = ({
       </TableCell>
       <TableCell className="text-sm text-gray-600 text-left">{formattedUpdatedAt}</TableCell>
       <TableCell align="right">
-      <FileMenu
+      <ExamMenu
                     row={row}
                     handleMenuClose={handleMenuClose}
                     openModal={openModal}
