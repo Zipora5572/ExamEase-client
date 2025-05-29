@@ -1,83 +1,167 @@
-import React from "react"
-import { Link } from "react-router-dom"
-import { Star, Calendar, Users, BarChart3, Badge } from "lucide-react"
-import { formatDate } from "@/lib/utils"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Button } from "../ui/button"
+"use client"
+
+import type React from "react"
+
+import { Calendar, Users, BarChart3, Star, FileText, Folder } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import type { ExamFileType, ExamFolderType } from "../../models/Exam"
+import { formatDate } from "../../lib/utils"
+import ExamRowButtons from "./ExamRowButtons"
+import ExamMenu from "./ExamMenu"
 
 interface ExamCardProps {
-  row: any
+  item: ExamFileType | ExamFolderType
   isFolder: boolean
-  handleToggleStarred?: (id: number, isStarred: boolean) => void
+  onItemClick: (item: ExamFileType | ExamFolderType) => void
+  openFolder: (folderId: number, name: string) => void
+  openModal: (data: {
+    title: string
+    initialName?: string
+    setNewName?: (name: string) => void
+    confirmText?: string
+    onConfirm?: (name: string) => void
+    children?: React.ReactNode
+  }) => void
+  handleRowClick: (fileName: string, fileUrl: string) => void
 }
 
-const ExamCard: React.FC<ExamCardProps> = ({ row, isFolder, handleToggleStarred }) => {
-  const formattedDate = row.exam_date ? formatDate(new Date(row.exam_date).toString()) : "Date not set"
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "draft":
+      return "bg-gray-100 text-gray-700 border-gray-200"
+    case "grading":
+      return "bg-purple-100 text-purple-700 border-purple-200"
+    case "completed":
+      return "bg-green-100 text-green-700 border-green-200"
+    case "in progress":
+      return "bg-yellow-100 text-yellow-700 border-yellow-200"
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-200"
+  }
+}
+
+const getGradingTypeColor = (type: string) => {
+  switch (type?.toLowerCase()) {
+    case "automatic grading":
+      return "bg-blue-100 text-blue-700 border-blue-200"
+    case "manual grading":
+      return "bg-orange-100 text-orange-700 border-orange-200"
+    case "mixed grading":
+      return "bg-indigo-100 text-indigo-700 border-indigo-200"
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-200"
+  }
+}
+
+const ExamCard = ({ item, isFolder, onItemClick, openFolder, openModal, handleRowClick }: ExamCardProps) => {
+  const formattedDate = formatDate(item.updatedAt.toString())
+
+  const handleCardClick = () => {
+    if (isFolder) {
+      openFolder(item.id, item.name)
+    } else {
+      if ("examPath" in item) {
+        handleRowClick(item.name, item.examPath)
+      }
+    }
+  }
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardHeader className="p-4 pb-2 flex flex-row items-start justify-between">
-        <div className="space-y-1">
-          <CardTitle className="text-lg">
-            <Link
-              to={`/ExamDetails?id=${row.id}`}
-              className="hover:text-blue-600 transition-colors"
-            >
-              {row.title || row.name}
-            </Link>
-          </CardTitle>
-          {row.course_code && (
-            <p className="text-sm text-gray-500">{row.course_code}</p>
-          )}
-        </div>
-        {!isFolder && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className={row.is_starred ? "text-yellow-500" : "text-gray-400 hover:text-yellow-500"}
-            onClick={() => handleToggleStarred && handleToggleStarred(row.id, row.is_starred)}
-          >
-            <Star className={`h-5 w-5 ${row.is_starred ? "fill-current" : ""}`} />
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent className="p-4">
-        <div className="mb-4">
-          {row.status && (
-            <Badge className="bg-blue-100 text-blue-600">{row.status.replace("_", " ")}</Badge>
-          )}
-          {row.grading_method && (
-            <Badge className="ml-2">
-              {row.grading_method} grading
-            </Badge>
-          )}
-        </div>
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-            <span>{formattedDate}</span>
-          </div>
-          <div className="flex items-center">
-            <Users className="h-4 w-4 text-gray-400 mr-2" />
-            <span>
-              {row.submission_count} submission{row.submission_count !== 1 ? "s" : ""}
-            </span>
-          </div>
-          {row.average_grade && (
-            <div className="flex items-center">
-              <BarChart3 className="h-4 w-4 text-gray-400 mr-2" />
-              <span>Average: {row.average_grade.toFixed(1)}</span>
+    <Card className="group hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-gray-300">
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg bg-blue-50">
+              {isFolder ? <Folder className="h-5 w-5 text-blue-600" /> : <FileText className="h-5 w-5 text-blue-600" />}
             </div>
-          )}
+            <div className="flex-1 min-w-0">
+              <h3
+                className="font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors truncate"
+                onClick={handleCardClick}
+              >
+                {item.name}
+              </h3>
+              {!isFolder && "namePrefix" in item && <p className="text-sm text-gray-500 mt-1">{item.namePrefix}</p>}
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {item.isStarred && <Star className="h-4 w-4 fill-amber-400 text-amber-400" />}
+            <ExamMenu row={item} handleMenuClose={() => {}} openModal={openModal} />
+          </div>
+        </div>
+
+        {!isFolder && (
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {"status" in item && item.status && (
+                <Badge variant="outline" className={getStatusColor(item.status)}>
+                  {item.status}
+                </Badge>
+              )}
+              {"gradingType" in item && item.gradingType && (
+                <Badge variant="outline" className={getGradingTypeColor(item.gradingType)}>
+                  {item.gradingType}
+                </Badge>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Calendar className="h-4 w-4" />
+                <span>{formattedDate}</span>
+              </div>
+
+              {"submissionCount" in item && (
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <Users className="h-4 w-4" />
+                  <span>{item.submissionCount || 0} submissions</span>
+                </div>
+              )}
+
+              {"averageScore" in item && item.averageScore && (
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Average: {item.averageScore}</span>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-2 text-gray-600">
+                <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+                <span>{item.isShared ? "Shared" : "Only you"}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isFolder && (
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Calendar className="h-4 w-4" />
+              <span>{formattedDate}</span>
+            </div>
+
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+              <span>{item.isShared ? "Shared" : "Only you"}</span>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <ExamRowButtons row={item} />
+            </div>
+
+            <Button variant="outline" size="sm" onClick={handleCardClick} className="ml-auto">
+              View Details
+            </Button>
+          </div>
         </div>
       </CardContent>
-      <div className="p-4 pt-0 flex justify-end">
-        <Link to={`/ExamDetails?id=${row.id}`}>
-          <Button variant="outline" size="sm">
-            View Details
-          </Button>
-        </Link>
-      </div>
     </Card>
   )
 }

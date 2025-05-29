@@ -223,7 +223,7 @@ import { Camera, Save, X } from "lucide-react"
 const Profile = () => {
   const user = useSelector((state: StoreType) => state.auth.user)
   const dispatch = useDispatch<AppDispatch>()
-//   const { toast } = useToast()
+  //   const { toast } = useToast()
   const [formData, setFormData] = useState<Partial<UserType>>({
     firstName: user?.firstName,
     lastName: user?.lastName,

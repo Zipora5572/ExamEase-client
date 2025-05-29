@@ -25,6 +25,8 @@ import { useSelector } from "react-redux"
 import type { StoreType } from "@/store/store"
 import { Avatar, AvatarFallback } from "./ui/avatar"
 import { Link } from "react-router-dom"
+import UserAccess from "./Auth/UserAccess"
+import { Button } from "./ui/button"
 
 export default function Sidebar() {
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
@@ -212,22 +214,22 @@ export default function Sidebar() {
           currentPath.includes("/app/settings"),
         )}
       </nav>
-
       <div className="p-4 border-t border-gray-200 bg-gray-50">
-        <div className="flex items-center">
-          <Avatar className="h-8 w-8 border border-gray-200 shadow-sm">
-            {/* <AvatarImage src={user?.profilePicture || ""} alt={user?.firstName || "User"} /> */}
-            <AvatarFallback className="bg-red-100 text-red-600 font-medium">{getInitials()}</AvatarFallback>
-          </Avatar>
+  {user?.id ? (
+    <UserAccess user={user} />
+  ) : (
+    <div className="text-center">
+      <p className="text-sm text-gray-500 mb-2">Not signed in</p>
+      <Link to="/authForm">
+        <Button variant="outline" size="sm" className="w-full">
+          Sign In
+        </Button>
+      </Link>
+    </div>
+  )}
+</div>
 
-          {!isCollapsed && (
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-800">{`${user?.firstName || ""} ${user?.lastName || ""}`}</p>
-              <p className="text-xs text-gray-500 truncate max-w-[180px]">{user?.email}</p>
-            </div>
-          )}
-        </div>
-      </div>
+
     </div>
   )
 }

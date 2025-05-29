@@ -3,7 +3,7 @@ import { Plus, Github } from "lucide-react"
 import { Button } from "./ui/button"
 import NotificationsDropdown from "./NotificationsDropdown"
 import HelpCenter from "./HelpCenter"
-import UserMenu from "./Auth/UserAccess"
+import UserAccess from "./Auth/UserAccess"
 import { UserType } from "@/models/User"
 import initialState from "@/models/authUser"
 
@@ -45,7 +45,7 @@ const HeaderActions = ({ isPublicPage, user, handleCreateNew }: HeaderActionsPro
       <HelpCenter />
 
       {user?.id ? (
-        <UserMenu user={user} />
+        <UserAccess user={user} />
       ) : (
         <Link to="/authForm">
           <Button variant="default" size="sm">

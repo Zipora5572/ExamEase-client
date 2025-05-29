@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation } from "react-router-dom"
@@ -7,9 +9,11 @@ import useModal from "../../hooks/useModal"
 import ModalWrapper from "../ModalWrapper"
 import ActionButtons from "../ActionButtons"
 import ExamsTable from "./ExamsTable"
-import { ChevronLeft, Search } from "lucide-react"
+import { ChevronLeft, Search, Filter } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
+import { Badge } from "../ui/badge"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { getAllFoldersByUserId } from "@/store/folderSlice"
 
 const ExamList = () => {
@@ -26,17 +30,27 @@ const ExamList = () => {
   const location = useLocation()
   const filter = new URLSearchParams(location.search).get("filter") || "all"
   const [searchQuery, setSearchQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
+
   const filteredExams = exams?.filter((exam) => {
-    if (filter === "shared") return exam.isShared
-    if (filter === "starred") return exam.isStarred
-    if (searchQuery) return exam.name.toLowerCase().includes(searchQuery.toLowerCase())
-    return true
+    let matches = true
+
+    if (filter === "shared") matches = matches && exam.isShared
+    if (filter === "starred") matches = matches && exam.isStarred
+    if (searchQuery) matches = matches && exam.name.toLowerCase().includes(searchQuery.toLowerCase())
+    if (statusFilter !== "all" && "status" in exam) matches = matches && exam.status === statusFilter
+
+    return matches
   })
 
   const filteredFolders = folders.filter((folder) => {
-    if (filter === "shared") return folder.isShared
-    if (filter === "starred") return folder.name.toLowerCase().includes(searchQuery.toLowerCase())
-    return true
+    let matches = true
+
+    if (filter === "shared") matches = matches && folder.isShared
+    if (filter === "starred") matches = matches && folder.isStarred
+    if (searchQuery) matches = matches && folder.name.toLowerCase().includes(searchQuery.toLowerCase())
+
+    return matches
   })
 
   useEffect(() => {
@@ -55,12 +69,20 @@ const ExamList = () => {
     }
   }
 
+  const getFilterBadgeText = () => {
+    if (filter === "shared") return "Shared"
+    if (filter === "starred") return "Starred"
+    if (statusFilter !== "all") return statusFilter
+    return null
+  }
+
   return (
-    <div className="space-y-4 ">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+        <div className="flex items-center space-x-4">
           {folderPath.length > 0 && (
-            <Button variant="ghost" size="icon" onClick={handleGoBack} className="mr-2">
+            <Button variant="ghost" size="icon" onClick={handleGoBack} className="shrink-0">
               <ChevronLeft className="h-5 w-5" />
             </Button>
           )}
@@ -73,23 +95,25 @@ const ExamList = () => {
                     setFolderPath([])
                     setCurrentFolderId(null)
                   }}
-                  className={`text-sm font-medium ${folderPath.length === 0 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-                    }`}
+                  className={`text-lg font-semibold transition-colors ${
+                    folderPath.length === 0 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+                  }`}
                 >
-                  Your Exams
+                  Exams
                 </button>
               </li>
 
               {folderPath.map((folder, index) => (
                 <li key={index} className="flex items-center">
-                  <span className="mx-1 text-gray-400">/</span>
+                  <span className="mx-2 text-gray-400">/</span>
                   <button
                     onClick={() => {
                       setFolderPath(folderPath.slice(0, index + 1))
                       setCurrentFolderId(folder.id)
                     }}
-                    className={`text-sm font-medium ${index === folderPath.length - 1 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-                      }`}
+                    className={`text-lg font-semibold transition-colors ${
+                      index === folderPath.length - 1 ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+                    }`}
                   >
                     {folder.name}
                   </button>
@@ -98,39 +122,50 @@ const ExamList = () => {
             </ol>
           </nav>
         </div>
-        <div className="flex items-center space-x-2">
+
+        <div className="flex items-center space-x-3">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
               type="search"
               placeholder="Search exams..."
-              className="pl-8 w-64"
+              className="pl-10 w-64"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <ActionButtons
-            folderId={currentFolderId}
-            folderName={currentFolderName || "ראשי"}
-            openModal={openModal}
-          // modalData={modalData}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Filter className="h-4 w-4" />
+                Filter
+                {getFilterBadgeText() && (
+                  <Badge variant="secondary" className="ml-1">
+                    {getFilterBadgeText()}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setStatusFilter("all")}>All Status</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("draft")}>Draft</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("grading")}>Grading</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("completed")}>Completed</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("in progress")}>In Progress</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <ActionButtons folderId={currentFolderId} folderName={currentFolderName || "Main"} openModal={openModal} />
         </div>
       </div>
 
-      {/* {folderPath.length > 0 && (
-        <button
-          onClick={handleGoBack}
-          className="inline-flex items-center px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
-        >
-          <ChevronUp className="w-4 h-4 mr-1" />
-          Back
-        </button>
-      )} */}
+      {/* Subtitle */}
+      <div className="text-gray-600">Manage and view all your exams</div>
 
+      {/* Content */}
       {error ? (
-        <div className="p-4 text-red-700 bg-red-100 rounded-md">{error}</div>
+        <div className="p-4 text-red-700 bg-red-100 rounded-lg border border-red-200">{error}</div>
       ) : (
         <ExamsTable
           exams={filteredExams}
@@ -152,7 +187,7 @@ const ExamList = () => {
         onConfirm={modalData?.onConfirm}
         confirmText={modalData?.confirmText}
         initialName={modalData?.initialName}
-        setNewName={(() => { })}
+        setNewName={() => {}}
       >
         {modalData?.children}
       </ModalWrapper>
