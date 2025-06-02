@@ -18,12 +18,7 @@ interface ExamGridProps {
 }
 
 const ExamGrid = ({ exams, folders, openFolder, openModal, handleRowClick }: ExamGridProps) => {
-  const allItems = [
-    ...folders.map((folder) => ({ ...folder, type: "FOLDER" as const })),
-    ...exams.map((exam) => ({ ...exam, type: "FILE" as const })),
-  ]
-
-  if (allItems.length === 0) {
+  if (folders.length === 0 && exams.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-gray-400 text-lg mb-2">No exams found</div>
@@ -33,18 +28,46 @@ const ExamGrid = ({ exams, folders, openFolder, openModal, handleRowClick }: Exa
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {allItems.map((item) => (
-        <ExamCard
-          key={`${item.type}-${item.id}`}
-          item={item}
-          isFolder={item.type === "FOLDER"}
-          onItemClick={() => {}}
-          openFolder={openFolder}
-          openModal={openModal}
-          handleRowClick={handleRowClick}
-        />
-      ))}
+    <div className="space-y-8">
+      {/* Folders section */}
+      {folders.length > 0 && (
+        <div className="space-y-4">
+          {folders.length > 0 && exams.length > 0 && <h3 className="text-lg font-medium text-gray-700">Folders</h3>}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {folders.map((folder) => (
+              <ExamCard
+                key={`folder-${folder.id}`}
+                item={folder}
+                isFolder={true}
+                onItemClick={() => {}}
+                openFolder={openFolder}
+                openModal={openModal}
+                handleRowClick={handleRowClick}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Files section */}
+      {exams.length > 0 && (
+        <div className="space-y-4">
+          {folders.length > 0 && exams.length > 0 && <h3 className="text-lg font-medium text-gray-700">Exams</h3>}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {exams.map((exam) => (
+              <ExamCard
+                key={`file-${exam.id}`}
+                item={exam}
+                isFolder={false}
+                onItemClick={() => {}}
+                openFolder={openFolder}
+                openModal={openModal}
+                handleRowClick={handleRowClick}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

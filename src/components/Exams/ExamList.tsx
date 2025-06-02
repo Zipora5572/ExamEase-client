@@ -8,7 +8,7 @@ import { getAllExamsByUserId } from "../../store/examSlice"
 import useModal from "../../hooks/useModal"
 import ModalWrapper from "../ModalWrapper"
 import ActionButtons from "../ActionButtons"
-import ExamsTable from "./ExamsTable"
+import ExamsDisplay from "./ExamsDisplay"
 import { ChevronLeft, Search, Filter } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
@@ -59,7 +59,7 @@ const ExamList = () => {
       dispatch(getAllExamsByUserId(user?.id))
     }
   }, [user])
-
+  
   const handleGoBack = () => {
     if (folderPath.length > 0) {
       const newPath = [...folderPath]
@@ -160,14 +160,14 @@ const ExamList = () => {
         </div>
       </div>
 
-      {/* Subtitle */}
-      <div className="text-gray-600">Manage and view all your exams</div>
+      {/* Content spacing */}
+      <div className="h-2"></div>
 
       {/* Content */}
       {error ? (
         <div className="p-4 text-red-700 bg-red-100 rounded-lg border border-red-200">{error}</div>
       ) : (
-        <ExamsTable
+        <ExamsDisplay
           exams={filteredExams}
           folders={filteredFolders}
           loading={loading}

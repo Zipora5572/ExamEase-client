@@ -5,8 +5,6 @@ import NotificationsDropdown from "./NotificationsDropdown"
 import HelpCenter from "./HelpCenter"
 import UserAccess from "./Auth/UserAccess"
 import { UserType } from "@/models/User"
-import initialState from "@/models/authUser"
-
 interface HeaderActionsProps {
   isPublicPage: boolean
   user: UserType | null

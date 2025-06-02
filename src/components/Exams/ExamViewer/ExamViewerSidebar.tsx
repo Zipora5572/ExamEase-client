@@ -28,7 +28,6 @@ interface ExamViewerSidebarProps {
 }
 
 const ExamViewerSidebar = ({
-  exam,
   grade,
   setgrade,
   evaluation,

@@ -12,7 +12,6 @@ import { useCanvasGestures } from "./useCanvasGestures"
 import StudentExamService from "../../../../services/StudentExamService"
 import { useCanvasTools } from "./useCanvasTools"
 import { Check, X } from "lucide-react"
-import { log } from "console"
 
 interface ExamViewerCanvasProps {
   exam: any
@@ -59,7 +58,6 @@ const ExamViewerCanvas = ({
   const [currentMarkScore, setCurrentMarkScore] = useState<number>(0)
   const [currentMarkType, setCurrentMarkType] = useState<string | null>(null)
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
-  const [newMarkIndex, setNewMarkIndex] = useState<number | null>(null)
   const [isHoveringImage, setIsHoveringImage] = useState(false)
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null)
   const [pendingMark, setPendingMark] = useState<any | null>(null)

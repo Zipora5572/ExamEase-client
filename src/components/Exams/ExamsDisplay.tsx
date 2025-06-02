@@ -10,9 +10,9 @@ import useModal from "../../hooks/useModal"
 import NoDocuments from "../NoDocuments"
 import ExamGrid from "./ExamGrid"
 import ExamViewToggle from "./ExamViewTable"
-import ModernExamTable from "./ModernExamTable"
+import ExamTable from "./ExamTable"
 
-interface ExamTableProps {
+interface ExamsDisplayProps {
   exams: ExamFileType[] | null
   folders: ExamFolderType[]
   loading: boolean
@@ -24,7 +24,7 @@ interface ExamTableProps {
   setFolderPath: React.Dispatch<React.SetStateAction<{ id: number | null; name: string }[]>>
 }
 
-const ExamTable = ({
+const ExamsDisplay = ({
   exams,
   folders,
   loading,
@@ -32,7 +32,7 @@ const ExamTable = ({
   setCurrentFolderId,
   setCurrentFolderName,
   setFolderPath,
-}: ExamTableProps) => {
+}: ExamsDisplayProps) => {
   const [selectedFile, setSelectedFile] = useState<{ name: string; url: string } | null>(null)
   const { isOpen, openModal, closeModal, modalData } = useModal()
   const [viewMode, setViewMode] = useState<"all" | "folder">("all")
@@ -63,7 +63,6 @@ const ExamTable = ({
     setSelectedFile({ name: fileName, url: fileUrl })
   }
 
-  const handleMenuClose = () => {}
 
   if (selectedFile) {
     navigate("/app/viewExam", { state: { fileName: selectedFile.name, fileUrl: selectedFile.url } })
@@ -84,13 +83,12 @@ const ExamTable = ({
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">{filteredExams.length + filteredFolders.length} items</div>
+        <div className="flex items-center justify-end">
           <ExamViewToggle viewMode={displayMode} onViewModeChange={setDisplayMode} />
         </div>
 
         {displayMode === "table" ? (
-          <ModernExamTable
+          <ExamTable
             exams={filteredExams}
             folders={filteredFolders}
             openFolder={openFolder}
@@ -112,7 +110,6 @@ const ExamTable = ({
         open={isOpen}
         handleClose={() => {
           closeModal()
-          handleMenuClose()
         }}
         title={modalData?.title || ""}
         onConfirm={modalData?.onConfirm}
@@ -125,4 +122,4 @@ const ExamTable = ({
   )
 }
 
-export default ExamTable
+export default ExamsDisplay

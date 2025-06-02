@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button"
 import {
   ArrowLeft,
-  Save,
   Share2,
   ZoomIn,
   ZoomOut,
@@ -39,10 +38,6 @@ const ExamViewerHeader = ({
   zoom,
   setZoom,
   setIsShareDialogOpen,
-  isSaving,
-  setIsSaving,
-  grade,
-  evaluation,
   resetView,
   toggleSettingsPanel,
   saveAnnotatedExam,

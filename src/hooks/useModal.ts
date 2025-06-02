@@ -13,6 +13,7 @@ const useModal = () => {
     const [modalData, setModalData] = useState<ModalData | null>(null);
 
     const openModal = (data: ModalData) => {
+        
         setModalData(data);
         setIsOpen(true);
     };

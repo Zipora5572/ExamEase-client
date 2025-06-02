@@ -13,6 +13,9 @@ export type ExamType = {
     examPath: string,
     updatedAt:Date,
     createdAt:Date,
+    status:  'PENDING' | 'COMPLETED' | 'IN_PROGRESS',
+    submissions:number,
+    averageGrade:number|null,
 
 }
 

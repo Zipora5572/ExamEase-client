@@ -1,27 +1,16 @@
 import type React from "react"
-import { Skeleton } from "@/components/ui/skeleton" // הנחה שיש לך רכיב Skeleton
-
+import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "@/store/store"
 import {
-  Calendar,
   FileText,
   FolderOpen,
   Users,
   Clock,
-  Star,
-  Share2,
   Plus,
   Search,
-  Filter,
-  ArrowUpDown,
-  MoreHorizontal,
-  Download,
-  Pencil,
-  Trash2,
   ChevronRight,
   CheckCircle,
 } from "lucide-react"
@@ -29,20 +18,15 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { getAllExamsByUserId } from "@/store/examSlice"
 import { getAllFoldersByUserId } from "@/store/folderSlice"
 import { ExamFileType } from "@/models/Exam"
 import { formatDate } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar"
 import { StudentExamType } from "@/models/StudentExam"
 import { getStudentExamsByExamId, getStudentExamsByUserId } from "@/store/studentExamSlice"
+import useModal from "@/hooks/useModal"
+import ExamMenu from "@/components/Exams/ExamMenu"
+import ModalWrapper from "@/components/ModalWrapper"
 
 type PendingExamCard = {
   id: string
@@ -54,13 +38,21 @@ type PendingExamCard = {
 const Dashboard = () => {
   const dispatch = useDispatch<AppDispatch>()
   const [searchQuery, setSearchQuery] = useState("")
+  const { isOpen, openModal, closeModal, modalData } = useModal()
+  
+  
   const user = useSelector((state: StoreType) => state.auth.user)
   const exams = useSelector((state: StoreType) => state.exams.exams)
+  const bestExam = exams.length > 0
+    ? exams.reduce((best, current) => {
+        return (current.averageGrade ?? 0) > (best.averageGrade ?? 0) ? current : best;
+      }, exams[0])
+    : null;
   // const studentxams = useSelector((state: StoreType) => state.exams.exams)
   const loading = useSelector((state: StoreType) => state.exams.loading)
   const studentExams = useSelector((state: StoreType) => state.studentExams.examsByUserId)
 
-  const folders = useSelector((state: StoreType) => state.folders.folders)
+  
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -75,7 +67,6 @@ const Dashboard = () => {
 
   
   const [pendingExams, setPendingExams] = useState<PendingExamCard[]>([])
-console.log(studentExams);
 
   useEffect(() => {
     if (user?.id) {
@@ -136,11 +127,7 @@ console.log(studentExams);
   
 
 
-  const upcomingExams = [
-    { id: 1, name: "Physics Mid-term", date: "Tomorrow", students: 28, progress: 75 },
-    { id: 2, name: "Chemistry Lab Test", date: "Next week", students: 22, progress: 45 },
-    { id: 3, name: "Biology Final", date: "In 2 weeks", students: 35, progress: 20 },
-  ]
+  
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -252,62 +239,11 @@ console.log(studentExams);
   </Card>
 </div>
 
-
-      <Tabs defaultValue="recent" className="space-y-6">
-        <div className="flex justify-between items-center">
-          <TabsList className="bg-white border border-gray-200">
-            <TabsTrigger value="recent" className="data-[state=active]:bg-gray-100">
-              Recent
-            </TabsTrigger>
-            <TabsTrigger value="starred" className="data-[state=active]:bg-gray-100">
-              Starred
-            </TabsTrigger>
-            <TabsTrigger value="shared" className="data-[state=active]:bg-gray-100">
-              Shared
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="border-gray-200 bg-white">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>All Items</DropdownMenuItem>
-                <DropdownMenuItem>Exams Only</DropdownMenuItem>
-                <DropdownMenuItem>Folders Only</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Modified Today</DropdownMenuItem>
-                <DropdownMenuItem>Modified This Week</DropdownMenuItem>
-                <DropdownMenuItem>Modified This Month</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="border-gray-200 bg-white">
-                  <ArrowUpDown className="h-4 w-4 mr-2" />
-                  Sort
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>Name (A-Z)</DropdownMenuItem>
-                <DropdownMenuItem>Name (Z-A)</DropdownMenuItem>
-                <DropdownMenuItem>Last Modified</DropdownMenuItem>
-                <DropdownMenuItem>Last Created</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        <TabsContent value="recent" className="mt-0">
-          <Card className="border-none shadow-sm">
+    <Card className="border-none shadow-sm">
+      
             <div className="grid grid-cols-1 divide-y divide-gray-100">
             {loading ? (
-                // מציג כמה שורות Skeleton במקום הרשימה
+               
                 Array(5).fill(null).map((_, idx) => (
                   <div key={idx} className="flex items-center justify-between p-4">
                     <Skeleton className="h-6 w-6 rounded" />
@@ -323,7 +259,7 @@ console.log(studentExams);
                 <div
                   key={item.id}
                   className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => navigate(`/app/${item.type == 'FOLDER' ? "folders" : "exams"}/${item.id}`)}
+                  onClick={() => navigate(`/app/${item.type?.toUpperCase() === "FOLDER" ? "folders" : "exams"}/${item.id}`)}
                 >
                   <div className="flex items-center gap-3">
                     {getFileIcon(item.type)}
@@ -340,159 +276,12 @@ console.log(studentExams);
                    {/* <Star className="h-4 w-4 text-yellow-400" />
                      <Share2 className="h-4 w-4 text-blue-400" /> */}
 
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-gray-100">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Rename
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Share2 className="h-4 w-4 mr-2" />
-                          Share
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600">
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <ExamMenu row={item} openModal={openModal} />
                   </div>
                 </div>
               )))}
             </div>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="starred" className="mt-0">
-          <Card className="border-none shadow-sm">
-            <div className="grid grid-cols-1 divide-y divide-gray-100">
-              {recentExams
-                .filter((item) => item.isStarred)
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => navigate(`/app/${item.type === "folder" ? "folders" : "exams"}/${item.id}`)}
-                  >
-                    <div className="flex items-center gap-3">
-                      {getFileIcon(item.type)}
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                          <Clock className="h-3 w-3" />
-                          <span>Modified {formatDate(item.updatedAt.toString())}</span>
-
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Star className="h-4 w-4 text-yellow-400" />
-                      {item.isStarred && <Share2 className="h-4 w-4 text-blue-400" />}
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-gray-100">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem>
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Rename
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Share2 className="h-4 w-4 mr-2" />
-                            Share
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="shared" className="mt-0">
-          <Card className="border-none shadow-sm">
-            <div className="grid grid-cols-1 divide-y divide-gray-100">
-              {recentExams
-                .filter((item) => item.isShared)
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => navigate(`/app/${item.type === "folder" ? "folders" : "exams"}/${item.id}`)}
-                  >
-                    <div className="flex items-center gap-3">
-                      {getFileIcon(item.type)}
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                          <Clock className="h-3 w-3" />
-                          <span>Modified {formatDate(item.updatedAt.toString())}</span>
-
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {item.isStarred && <Star className="h-4 w-4 text-yellow-400" />}
-                      <Share2 className="h-4 w-4 text-blue-400" />
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-gray-100">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem>
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Rename
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Share2 className="h-4 w-4 mr-2" />
-                            Share
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
 
       <div className="grid gap-6 md:grid-cols-3">
       <Card className="md:col-span-2 border-none shadow-sm">
@@ -521,50 +310,46 @@ console.log(studentExams);
     </div>
   </CardContent>
 </Card>
+<ModalWrapper
+        open={isOpen}
+        handleClose={() => {
+          closeModal()
+        }}
+        title={modalData?.title || ""}
+        onConfirm={modalData?.onConfirm}
+        confirmText={modalData?.confirmText}
+        initialName={modalData?.initialName}
+      >
+        {modalData?.children}
+      </ModalWrapper>
 
 
+      <Card className="border-none shadow-sm">
+  <CardHeader>
+    <CardTitle>Top Performing Exam</CardTitle>
+    <CardDescription>Highest average grade across all exams</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-2">
+      <p className="text-lg font-bold text-green-600">{bestExam?.name}</p>
+      <p className="text-sm text-gray-700">
+        Average Grade: <span className="font-semibold">{bestExam?.averageGrade?.toFixed(2)}</span>
+      </p>
+    </div>
+  </CardContent>
+  <CardFooter>
+    <Button
+      variant="outline"
+      size="sm"
+      className="w-full border-gray-200"
+      onClick={() => navigate("/app/exams")}
+    >
+      View All Exams
+      <ChevronRight className="h-4 w-4 ml-1" />
+    </Button>
+  </CardFooter>
+</Card>
 
-        <Card className="border-none shadow-sm">
-          <CardHeader>
-            <CardTitle>Recent Collaborators</CardTitle>
-            <CardDescription>People you've shared exams with recently</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { id: 1, name: "Sarah Johnson", email: "sarah.j@example.com", role: "Teacher" },
-                { id: 2, name: "Michael Chen", email: "m.chen@example.com", role: "Assistant" },
-                { id: 3, name: "Emma Williams", email: "emma.w@example.com", role: "Teacher" },
-              ].map((person) => (
-                <div key={person.id} className="flex items-center gap-3">
-                  <Avatar className="border border-gray-200">
-                    <AvatarFallback className="bg-gray-100 text-gray-600">
-                      {person.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium text-gray-900">{person.name}</p>
-                    <p className="text-sm text-gray-500">{person.role}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full border-gray-200"
-              onClick={() => navigate("/app/shared-exams")}
-            >
-              Manage Sharing
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </CardFooter>
-        </Card>
       </div>
     </div>
   )

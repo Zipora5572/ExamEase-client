@@ -64,6 +64,8 @@ export default {
         try {
 
             const response = await axios.get('/exam');
+            console.log(response);
+            
             return response.data;
         } catch (error) {
             console.error("Error fetch exams ",error)

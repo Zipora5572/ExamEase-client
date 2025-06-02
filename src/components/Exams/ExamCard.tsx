@@ -1,8 +1,5 @@
-"use client"
-
 import type React from "react"
-
-import { Calendar, Users, BarChart3, Star, FileText, Folder } from "lucide-react"
+import { Calendar, Users,  Star, FileText, Folder, Percent } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,20 +39,7 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const getGradingTypeColor = (type: string) => {
-  switch (type?.toLowerCase()) {
-    case "automatic grading":
-      return "bg-blue-100 text-blue-700 border-blue-200"
-    case "manual grading":
-      return "bg-orange-100 text-orange-700 border-orange-200"
-    case "mixed grading":
-      return "bg-indigo-100 text-indigo-700 border-indigo-200"
-    default:
-      return "bg-gray-100 text-gray-700 border-gray-200"
-  }
-}
-
-const ExamCard = ({ item, isFolder, onItemClick, openFolder, openModal, handleRowClick }: ExamCardProps) => {
+const ExamCard = ({ item, isFolder, openFolder, openModal, handleRowClick }: ExamCardProps) => {
   const formattedDate = formatDate(item.updatedAt.toString())
 
   const handleCardClick = () => {
@@ -89,7 +73,7 @@ const ExamCard = ({ item, isFolder, onItemClick, openFolder, openModal, handleRo
 
           <div className="flex items-center space-x-2">
             {item.isStarred && <Star className="h-4 w-4 fill-amber-400 text-amber-400" />}
-            <ExamMenu row={item} handleMenuClose={() => {}} openModal={openModal} />
+            <ExamMenu row={item} openModal={openModal} />
           </div>
         </div>
 
@@ -101,37 +85,34 @@ const ExamCard = ({ item, isFolder, onItemClick, openFolder, openModal, handleRo
                   {item.status}
                 </Badge>
               )}
-              {"gradingType" in item && item.gradingType && (
-                <Badge variant="outline" className={getGradingTypeColor(item.gradingType)}>
-                  {item.gradingType}
-                </Badge>
-              )}
+            
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="flex items-center space-x-2 text-gray-600">
                 <Calendar className="h-4 w-4" />
                 <span>{formattedDate}</span>
               </div>
 
-              {"submissionCount" in item && (
+              {"submissions" in item && (
                 <div className="flex items-center space-x-2 text-gray-600">
                   <Users className="h-4 w-4" />
-                  <span>{item.submissionCount || 0} submissions</span>
+                  <span>{item.submissions || 0} submissions</span>
                 </div>
               )}
 
-              {"averageScore" in item && item.averageScore && (
+              {"averageGrade" in item && (
                 <div className="flex items-center space-x-2 text-gray-600">
-                  <BarChart3 className="h-4 w-4" />
-                  <span>Average: {item.averageScore}</span>
+
+<Percent className="h-3.5 w-3.5 text-gray-500" />
+                  <span>Average: {item.averageGrade || "N/A"}</span>
                 </div>
               )}
 
-              <div className="flex items-center space-x-2 text-gray-600">
+              {/* <div className="flex items-center space-x-2 text-gray-600">
                 <div className="h-2 w-2 rounded-full bg-gray-400"></div>
                 <span>{item.isShared ? "Shared" : "Only you"}</span>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
@@ -156,9 +137,16 @@ const ExamCard = ({ item, isFolder, onItemClick, openFolder, openModal, handleRo
               <ExamRowButtons row={item} />
             </div>
 
-            <Button variant="outline" size="sm" onClick={handleCardClick} className="ml-auto">
-              View Details
-            </Button>
+            {isFolder ? (
+              <Button variant="outline" size="sm" onClick={handleCardClick} className="ml-auto flex items-center gap-1">
+                <Folder className="h-4 w-4" />
+                <span>Open Folder</span>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" onClick={handleCardClick} className="ml-auto">
+                View Details
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

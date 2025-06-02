@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 import {
   FolderOpen,
-  Share2,
   Star,
   ChevronDown,
   ChevronRight,
@@ -23,7 +22,6 @@ import {
 } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { StoreType } from "@/store/store"
-import { Avatar, AvatarFallback } from "./ui/avatar"
 import { Link } from "react-router-dom"
 import UserAccess from "./Auth/UserAccess"
 import { Button } from "./ui/button"
@@ -52,10 +50,7 @@ export default function Sidebar() {
     }
   }, [location])
 
-  const getInitials = () => {
-    // if (!user) return "U"
-    return `${user?.firstName?.charAt(0).toUpperCase() || ""}${user?.lastName?.charAt(0) || ""}`
-  }
+ 
 
   const handleNavigate = (path: string) => {
     navigate(path)
@@ -131,24 +126,19 @@ export default function Sidebar() {
                 currentPath.includes("/app/exams") &&
                   (currentPath.includes("filter=all") || !currentPath.includes("filter=")),
               )}
-              {navButton(
+              {/* {navButton(
                 "Shared by You",
                 <Share2 className="h-4 w-4" />,
                 "/app/exams?filter=shared",
                 currentPath.includes("filter=shared"),
-              )}
+              )} */}
               {navButton(
                 "Starred",
                 <Star className="h-4 w-4" />,
                 "/app/exams?filter=starred",
                 currentPath.includes("filter=starred"),
               )}
-              {navButton(
-                "Shared Exams",
-                <Share2 className="h-4 w-4" />,
-                "/app/shared-exams",
-                currentPath.includes("/app/shared-exams"),
-              )}
+              
             </div>
           )}
         </div>

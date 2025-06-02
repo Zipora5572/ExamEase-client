@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import examService from "../services/ExamService";
 import folderService from "../services/FolderService";
 import { ExamFolderType } from '../models/Exam';
 

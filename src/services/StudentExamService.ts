@@ -96,10 +96,8 @@ uploadCorrectedImage: async (studentExamId: number, formData: FormData) => {
 
     getStudentExamsByUserId: async (userId: number) => {
         try {
-            console.log(userId);
             
             const response = await axios.get(`studentExam/user/${userId}`);
-console.log(response.data);
 
 
             return response.data;

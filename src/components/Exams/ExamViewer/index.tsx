@@ -1,19 +1,17 @@
-"use client"
-
 import { useEffect, useState, useRef, useCallback } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import type { AppDispatch, StoreType } from "../../../store/store"
+import { useDispatch } from "react-redux"
+import type { AppDispatch } from "../../../store/store"
 import { getStudentExamsByExamId } from "../../../store/studentExamSlice"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Loader2, Settings } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import ExamViewerCanvas from "./Canvas"
 import ExamViewerSidebar from "./ExamViewerSidebar"
 import SettingsPanel from "./SettingsPanel"
-import ExamViewerHeader from "./ExamViewerHeader" // Add this import
+import ExamViewerHeader from "./ExamViewerHeader" 
 
 const ExamFileViewer = () => {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const stageRef = useRef<any>(null) // Add this line
   const [loadingImage, setLoadingImage] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -38,7 +36,6 @@ const ExamFileViewer = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const { exam } = location.state || {}
-  const examId = exam?.examId || "unknown"
 
   // Create a memoized saveSettingsToLocalStorage function to avoid recreation on every render
   const saveSettingsToLocalStorage = useCallback(() => {
@@ -197,7 +194,6 @@ const ExamFileViewer = () => {
     }
   }, [exam?.examId, saveSettingsToLocalStorage, dataLoaded])
 
-  const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
 
   const handleGoBack = () => {
     // Save settings before navigating away
@@ -210,11 +206,7 @@ const ExamFileViewer = () => {
   // Add this function to the component
   const saveAnnotatedExam = () => {
     if (!stageRef.current || !image) {
-      toast({
-        title: "Error",
-        description: "Cannot save the exam. Please make sure the exam is loaded properly.",
-        variant: "destructive",
-      })
+    
       return
     }
 
@@ -268,10 +260,7 @@ const ExamFileViewer = () => {
         downloadLink.click()
         document.body.removeChild(downloadLink)
 
-        toast({
-          title: "Success",
-          description: "Annotated exam has been saved successfully.",
-        })
+       
 
         // Here you would typically send the image data to your API
         // For example:
@@ -281,11 +270,7 @@ const ExamFileViewer = () => {
       stageImage.src = stageDataUrl
     } catch (error) {
       console.error("Error saving annotated exam:", error)
-      toast({
-        title: "Error",
-        description: "Failed to save the annotated exam. Please try again.",
-        variant: "destructive",
-      })
+    
     }
   }
 
@@ -381,7 +366,7 @@ const ExamFileViewer = () => {
             pointsPerQuestion={pointsPerQuestion}
             questionWeights={questionWeights}
             setQuestionWeights={setQuestionWeights}
-            containerRef={containerRef}
+            containerRef={containerRef as React.RefObject<HTMLDivElement>}
             stageRef={stageRef} // Add this prop
           />
         </div>
@@ -394,7 +379,6 @@ const ExamFileViewer = () => {
           setEvaluation={setEvaluation}
           markedAnswers={markedAnswers}
           setMarkedAnswers={setMarkedAnswers}
-          studentExams={studentExams}
           selectedTemplate={selectedTemplate}
           setSelectedTemplate={setSelectedTemplate}
           pointsPerQuestion={pointsPerQuestion}

@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -36,7 +34,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import LanguageDetectionDialog from "../LangDetectionDialog"
 
 interface ExamMenuProps {
-  handleMenuClose: () => void
+ 
   row: ExamFileType | ExamFolderType
   openModal: (data: {
     title: string
@@ -47,12 +45,12 @@ interface ExamMenuProps {
     children?: React.ReactNode
   }) => void
 }
-const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
+
+const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
   const [newName, setNewName] = useState<string>(row.name)
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<"english" | "hebrew">("english")
-  // const [studentListUploaded, setStudentListUploaded] = useState(false)
   const [isProcessingLanguage, setIsProcessingLanguage] = useState(false)
   const [processingProgress, setProcessingProgress] = useState(0)
   const [detectedLanguage, setDetectedLanguage] = useState<"english" | "hebrew" | "unknown">("unknown")
@@ -61,6 +59,7 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector((state: StoreType) => state.auth.user)
   const selectedFilesRef = useRef<FileList | null>(null)
+  const isFolder = row.type === "FOLDER"
 
   useEffect(() => {
     setNewName(row.name)
@@ -114,23 +113,6 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
     setShowLanguageDialog(false)
     handleUploadStudentExams(selectedLanguage)
   }
-
-  // Check if student list has been uploaded for this exam
-  // useEffect(() => {
-  //   const checkStudentList = async () => {
-  //     try {
-  //       // This would be a real API call in a production app
-  //       // For now, we'll simulate this check
-  //       const hasStudents = await StudentService.hasStudents({ examId: row.id })
-  //       setStudentListUploaded(hasStudents)
-  //     } catch (error) {
-  //       console.error("Error checking student list:", error)
-  //       setStudentListUploaded(false)
-  //     }
-  //   }
-
-  //   checkStudentList()
-  // }, [row.id])
 
   const handleUploadStudentList = () => {
     openModal({
@@ -232,9 +214,8 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
 
         try {
           await StudentService.uploadStudentList({ examId: row.id }, filesToUpload[0])
-          // setStudentListUploaded(true)
           dispatch(getAllExamsByUserId(user?.id))
-          handleMenuClose()
+         
         } catch (error) {
           console.error("Error uploading student list:", error)
           setUploadError("Failed to upload student list. Please try again.")
@@ -334,7 +315,6 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
     setUploadError(null)
 
     try {
-      // In a real implementation, we would pass the selected language to the API
       await StudentExamService.uploadStudentExams(
         {
           examId: row.id,
@@ -343,8 +323,6 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
         files,
       )
       dispatch(getAllExamsByUserId(user?.id))
-
-      handleMenuClose()
     } catch (error) {
       console.error("Error uploading student exams:", error)
       setUploadError("Failed to upload student exams. Please try again.")
@@ -357,7 +335,6 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
     } catch (error) {
       console.error("Error downloading file:", error)
     }
-    handleMenuClose()
   }
 
   const handleDelete = () => {
@@ -365,15 +342,14 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
       title: "Delete",
       children: (
         <div className="text-sm text-gray-600">
-          You and the people you shared this file with won't be able to access it once it has been deleted. The file
-          will be permanently deleted, and this action can't be undone.
+          You and the people you shared this {isFolder ? "folder" : "file"} with won't be able to access it once it has
+          been deleted. The {isFolder ? "folder" : "file"} will be permanently deleted, and this action can't be undone.
         </div>
       ),
       confirmText: "Delete",
       onConfirm: () => {
         if (row.type === "FILE") dispatch(deleteExamFile(row.id))
         else dispatch(deleteFolder(row.id))
-        handleMenuClose()
       },
     })
   }
@@ -389,7 +365,6 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
       onConfirm: (updatedName: string) => {
         if (row.type === "FILE") dispatch(renameExamFile({ id: row.id, newName: updatedName }))
         else dispatch(renameFolder({ id: row.id, newName: updatedName }))
-        handleMenuClose()
       },
     })
   }
@@ -404,62 +379,71 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
             onClick={(event) => {
               event.stopPropagation()
             }}
-            className="text-gray-400 hover:text-gray-700 focus:outline-none cursor-pointer"
+            className="text-gray-400 hover:text-gray-700 focus:outline-none cursor-pointer h-8 w-8"
           >
             <MoreHorizontal className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuGroup>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleUploadStudentList()
-                    }}
-                  >
-                    <FileSpreadsheet className="mr-2 h-4 w-4" />
-                    <span>Upload Students Excel</span>
-                  </DropdownMenuItem>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-xs">Upload student roster first to enable AI matching</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          {/* File-specific options */}
+          {!isFolder && (
+            <>
+              <DropdownMenuGroup>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleUploadStudentList()
+                        }}
+                      >
+                        <FileSpreadsheet className="mr-2 h-4 w-4" />
+                        <span>Upload Students Excel</span>
+                      </DropdownMenuItem>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs max-w-xs">Upload student roster first to enable AI matching</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleUploadStudentExams()
-                    }}
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    <span>Upload Student Exams</span>
-                  </DropdownMenuItem>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-xs">AI will identify students and grade exams</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              handleDownload()
-            }}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            <span>Download</span>
-          </DropdownMenuItem>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleUploadStudentExams()
+                        }}
+                      >
+                        <Upload className="mr-2 h-4 w-4" />
+                        <span>Upload Student Exams</span>
+                      </DropdownMenuItem>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs max-w-xs">AI will identify students and grade exams</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleDownload()
+                }}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                <span>Download</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+
+          {/* Common options for both files and folders */}
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation()
@@ -469,7 +453,9 @@ const ExamMenu = ({ handleMenuClose, openModal, row }: ExamMenuProps) => {
             <Pencil className="mr-2 h-4 w-4" />
             <span>Rename</span>
           </DropdownMenuItem>
+
           <DropdownMenuSeparator />
+
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation()
