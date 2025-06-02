@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { login } from "../../store/userSlice"
+import { register } from "../../store/userSlice"
 import { Mail, Lock, ArrowRight, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -61,7 +61,7 @@ const SignUpForm = ({ setError }: SignUpFormProps) => {
     try {
       // In a real app, this would be an API call to create an account
       // For now, we'll just simulate a login
-      await dispatch(login({ email, password }))
+      await dispatch(register({ firstName, lastName, email, password }))
       navigate("/app/dashboard")
     } catch (error) {
       setError("Error creating account. Please try again.")
