@@ -1,6 +1,6 @@
 import type React from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "@/store/store"
@@ -43,11 +43,14 @@ const Dashboard = () => {
   
   const user = useSelector((state: StoreType) => state.auth.user)
   const exams = useSelector((state: StoreType) => state.exams.exams)
-  const bestExam = exams.length > 0
-    ? exams.reduce((best, current) => {
-        return (current.averageGrade ?? 0) > (best.averageGrade ?? 0) ? current : best;
-      }, exams[0])
-    : null;
+  
+const bestExam = useMemo(() => {
+  if (!Array.isArray(exams) || exams.length === 0) return null;
+
+  return exams.reduce((best, current) => {
+    return (current.averageGrade ?? 0) > (best.averageGrade ?? 0) ? current : best;
+  }, exams[0]);
+}, [exams]);
   // const studentxams = useSelector((state: StoreType) => state.exams.exams)
   const loading = useSelector((state: StoreType) => state.exams.loading)
   const studentExams = useSelector((state: StoreType) => state.studentExams.examsByUserId)
