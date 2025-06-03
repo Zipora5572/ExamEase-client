@@ -23,7 +23,11 @@ const ChartContainer = () => {
           },
         ],
       },
-      options: {},
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+      
     })
 
     return () => {
