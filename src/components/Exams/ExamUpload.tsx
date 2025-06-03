@@ -21,8 +21,10 @@ const ExamUpload = ({ folderId }: { folderId: number | undefined }) => {
   const dispatch = useDispatch<AppDispatch>()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const user = useSelector((state: StoreType) => state.auth.user)
+console.log("userid", user?.id);
 
   const [examDetails] = useState<Partial<ExamFileType>>({
+    
     userId: user?.id,
     name: " ",
     folderId: folderId,
