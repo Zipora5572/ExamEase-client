@@ -3,9 +3,9 @@
 import type React from "react"
 import { Upload } from "lucide-react"
 import { useRef, useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { uploadExamFile } from "../../store/examSlice"
-import type {  AppDispatch } from "../../store/store"
+import type {  AppDispatch, StoreType } from "../../store/store"
 import LanguageDetectionService from "../../services/LanguageDetectionService"
 import { Button } from "@/components/ui/button"
 import type { ExamFileType } from "@/models/Exam"
@@ -20,9 +20,10 @@ const ExamUpload = ({ folderId }: { folderId: number | undefined }) => {
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const user = useSelector((state: StoreType) => state.auth.user)
 
   const [examDetails] = useState<Partial<ExamFileType>>({
-    userId: 1,
+    userId: user?.id,
     name: " ",
     folderId: folderId,
   })

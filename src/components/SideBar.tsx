@@ -10,10 +10,10 @@ import {
   ChevronRight,
   FileText,
   Settings,
-  Users,
+  
   ChevronLeft,
   ExpandIcon,
-  User,
+
   BarChart,
   FileBarChart,
   UserCircle,
@@ -143,7 +143,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        <div className="pt-1.5">
+        {/* <div className="pt-1.5">
           {sectionButton("Students", <Users className="h-4 w-4" />, "students")}
 
           {openSections.students && !isCollapsed && (
@@ -168,7 +168,7 @@ export default function Sidebar() {
               )}
             </div>
           )}
-        </div>
+        </div> */}
 
         <div className="pt-1.5">
           {sectionButton("Reports", <BarChart className="h-4 w-4" />, "reports")}

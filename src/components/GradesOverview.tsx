@@ -1,11 +1,9 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "../store/store"
 import {  getAllExamsByUserId } from "../store/examSlice"
 import { getStudentExamsByExamId } from "../store/studentExamSlice"
-import { Bar, Doughnut, Line } from "react-chartjs-2"
+import { Bar, Doughnut } from "react-chartjs-2"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-// import { useToast } from "@/hooks/use-toast"
 import {
   Download,
   FileText,
@@ -26,7 +23,6 @@ import {
   ArrowUpDown,
   BarChart3,
   PieChart,
-  LineChart,
   CheckCircle,
   Clock,
   RefreshCw,
@@ -43,7 +39,6 @@ const GradesOverview = () => {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedView, setSelectedView] = useState("table")
 
-  // const { toast } = useToast()
   const dispatch = useDispatch<AppDispatch>()
   const exams = useSelector((state: StoreType) => state.exams.exams)
   const user = useSelector((state: StoreType) => state.auth.user)
@@ -64,17 +59,9 @@ const GradesOverview = () => {
     setIsRefreshing(true)
     try {
       await dispatch(getStudentExamsByExamId(examId)).unwrap()
-      // toast({
-      //   title: "Success",
-      //   description: "Student grades loaded successfully",
-      //   variant: "success",
-      // })
+   
     } catch (error) {
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to load student grades",
-      //   variant: "destructive",
-      // })
+    
     } finally {
       setIsRefreshing(false)
     }
@@ -199,19 +186,7 @@ const GradesOverview = () => {
   }
 
   // Mock data for trends over time
-  const trendData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [
-      {
-        label: "Average grade",
-        data: [65, 68, 72, 75, 82, 85],
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        fill: true,
-        tension: 0.4,
-      },
-    ],
-  }
+  
 
   if (loading && !isRefreshing && !selectedExam) {
     return (
@@ -274,12 +249,7 @@ const GradesOverview = () => {
                     Pie Chart
                   </div>
                 </SelectItem>
-                <SelectItem value="line">
-                  <div className="flex items-center gap-2">
-                    <LineChart className="h-4 w-4" />
-                    Trend Line
-                  </div>
-                </SelectItem>
+               
               </SelectContent>
             </Select>
           </div>
@@ -573,31 +543,7 @@ const GradesOverview = () => {
               </Card>
             )}
 
-            {selectedView === "line" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Trend</CardTitle>
-                  <CardDescription>Average grade over time</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <Line
-                      data={trendData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                          y: {
-                            beginAtZero: true,
-                            max: 100,
-                          },
-                        },
-                      }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+         
           </>
         )}
       </div>
