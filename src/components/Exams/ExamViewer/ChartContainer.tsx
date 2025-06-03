@@ -32,9 +32,10 @@ const ChartContainer = () => {
   }, [])
 
   return (
-    <div className="h-[300px] w-full max-w-xl"> {/* למשל מקסימום רוחב 640px */}
-      <canvas ref={canvasRef} />
-    </div>
+   <div className="relative h-[300px] w-full max-w-xl">
+  <canvas ref={canvasRef} className="w-full h-full" />
+</div>
+
   )
   
 }
