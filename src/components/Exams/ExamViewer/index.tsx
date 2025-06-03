@@ -328,7 +328,7 @@ const ExamFileViewer = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white" ref={containerRef}>
+    <div className="flex flex-col h-screen bg-white">
       <div className="border-b border-gray-200 bg-white">
         <ExamViewerHeader
           exam={exam}
@@ -347,8 +347,8 @@ const ExamFileViewer = () => {
         />
       </div>
 
-      <div className="flex flex-1 h-[calc(100vh-8rem)] overflow-hidden">
-        <div className="flex-1 flex items-stretch p-4">
+      <div className="flex flex-1 h-[calc(100vh-8rem)] overflow-hidden" >
+        <div className="flex-1 flex items-stretch p-4"  ref={containerRef}>
           <ExamViewerCanvas
             exam={exam}
             loadingImage={loadingImage}

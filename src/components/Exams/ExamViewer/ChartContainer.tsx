@@ -1,53 +1,53 @@
-"use client"
+// "use client"
 
-import { useEffect, useRef } from "react"
-import { Chart, registerables } from "chart.js"
+// import { useEffect, useRef } from "react"
+// import { Chart, registerables } from "chart.js"
 
-Chart.register(...registerables)
+// Chart.register(...registerables)
 
-const ChartContainer = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+// const ChartContainer = () => {
+//   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
-  useEffect(() => {
-    if (!canvasRef.current) return
+//   useEffect(() => {
+//     if (!canvasRef.current) return
 
-    const chartInstance = new Chart(canvasRef.current, {
-      type: "bar",
-      data: {
-        labels: ["Red", "Blue", "Yellow"],
-        datasets: [
-          {
-            label: "Votes",
-            data: [12, 19, 3],
-            backgroundColor: ["red", "blue", "yellow"],
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-      }
+//     const chartInstance = new Chart(canvasRef.current, {
+//       type: "bar",
+//       data: {
+//         labels: ["Red", "Blue", "Yellow"],
+//         datasets: [
+//           {
+//             label: "Votes",
+//             data: [12, 19, 3],
+//             backgroundColor: ["red", "blue", "yellow"],
+//           },
+//         ],
+//       },
+//       options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//       }
       
-    })
+//     })
 
-    return () => {
-      chartInstance.destroy()
-    }
-  }, [])
+//     return () => {
+//       chartInstance.destroy()
+//     }
+//   }, [])
 
-  return (
-   <div className="relative h-[300px] w-full max-w-xl">
-<canvas
-  ref={canvasRef}
-  width={640}
-  height={300}
-  className="w-full h-full"
-/>
+//   return (
+//    <div className="relative h-[300px] w-full max-w-xl">
+// <canvas
+//   ref={canvasRef}
+//   width={640}
+//   height={300}
+//   className="w-full h-full"
+// />
 
-</div>
+// </div>
 
-  )
+//   )
   
-}
+// }
 
-export default ChartContainer
+// export default ChartContainer
