@@ -37,7 +37,13 @@ const ChartContainer = () => {
 
   return (
    <div className="relative h-[300px] w-full max-w-xl">
-  <canvas ref={canvasRef} className="w-full h-full" />
+<canvas
+  ref={canvasRef}
+  width={640}
+  height={300}
+  className="w-full h-full"
+/>
+
 </div>
 
   )
