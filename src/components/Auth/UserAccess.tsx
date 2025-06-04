@@ -63,10 +63,15 @@ const UserAccess = ({ user, variant }: UserAccessProps) => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Log out
-          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+  <button onClick={handleLogout} className="text-red-600 hover:bg-red-50 flex items-center w-full px-2 py-1.5">
+    <LogOut className="text-red-600 focus:text-red-600"
+    />
+    Log out
+  </button>
+</DropdownMenuItem>
+
+
         </DropdownMenuContent>
       </DropdownMenu>
     )

@@ -55,8 +55,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user?.id) {
-      console.log("in");
-
+      
       dispatch(getAllFoldersByUserId(user?.id))
       dispatch(getAllExamsByUserId(user?.id))
       dispatch(getStudentExamsByUserId(user?.id))
@@ -73,7 +72,6 @@ const Dashboard = () => {
       dispatch(getAllFoldersByUserId(user.id))
       dispatch(getAllExamsByUserId(user.id))
       dispatch(getStudentExamsByUserId(user?.id))
-      console.log(studentExams);
     }
   }, [dispatch, user?.id])
 
@@ -119,6 +117,7 @@ const Dashboard = () => {
       .filter(se => exams.some(e => e.id == se.examId))
       .map(se => se.student.id)
   );
+console.log(studentExams);
 
   const totalStudents = studentIds.size;
 

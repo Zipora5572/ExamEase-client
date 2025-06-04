@@ -122,7 +122,6 @@ const ExamUpload: React.FC<ExamUploadProps> = ({
 ) : (
   <>
     <Upload className="h-4 w-4 mr-2" />
-    Upload Exam
   </>
 )}
   {isDashboard ? "New Exam" : "Upload Exam"}
