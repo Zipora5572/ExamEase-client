@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
@@ -10,10 +8,8 @@ import {
   ChevronRight,
   FileText,
   Settings,
-  
   ChevronLeft,
   ExpandIcon,
-
   BarChart,
   FileBarChart,
   UserCircle,
@@ -31,7 +27,8 @@ export default function Sidebar() {
     exams: true,
     students: false,
     reports: false,
-  })
+  });
+  
   const [isCollapsed, setIsCollapsed] = useState(false)
   const user = useSelector((state: StoreType) => state.auth.user)
 
@@ -41,25 +38,73 @@ export default function Sidebar() {
 
   useEffect(() => {
     setCurrentPath(location.pathname + location.search)
-    if (location.pathname.includes("/app/students")) {
-      setOpenSections((prev) => ({ ...prev, students: true }))
-    } else if (location.pathname.includes("/app/reports")) {
-      setOpenSections((prev) => ({ ...prev, reports: true }))
-    } else if (location.pathname.includes("/app/exams") || location.pathname === "/app") {
-      setOpenSections((prev) => ({ ...prev, exams: true }))
-    }
+  
+    setOpenSections((prev) => {
+      // לא מאפסים סקשנים שהיו פתוחים מראש, רק מוסיפים פתוח לסקשן הרלוונטי
+      const newOpenSections = { ...prev }
+  
+      if (location.pathname.includes("/app/students")) {
+        newOpenSections.students = true
+      } else if (location.pathname.includes("/app/reports")) {
+        newOpenSections.reports = true
+      } else if (location.pathname.includes("/app/exams") || location.pathname === "/app") {
+        newOpenSections.exams = true
+      }
+      return newOpenSections
+    })
   }, [location])
-
- 
+  
 
   const handleNavigate = (path: string) => {
     navigate(path)
   }
 
   const toggleSection = (section: string) => {
-    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }))
-  }
-
+    const isOpenNow = openSections[section];
+  
+    if (isCollapsed) {
+      // אם הסיידבר סגור, פותחים אותו ואת הסקשן ואז מנווטים
+      setIsCollapsed(false);
+      setOpenSections((prev) => ({
+        ...prev,
+        [section]: true,
+      }));
+  
+      switch (section) {
+        case "exams":
+          navigate("/app/exams?filter=all");
+          break;
+        case "students":
+          navigate("/app/students/all");
+          break;
+        case "reports":
+          navigate("/app/reports/grades");
+          break;
+      }
+    } else {
+      if (isOpenNow) {
+        // אם הסקשן פתוח, ננווט רק
+        switch (section) {
+          case "exams":
+            navigate("/app/exams?filter=all");
+            break;
+          case "students":
+            navigate("/app/students/all");
+            break;
+          case "reports":
+            navigate("/app/reports/grades");
+            break;
+        }
+      } else {
+        // אם הסקשן לא פתוח, פותחים אותו
+        setOpenSections((prev) => ({
+          ...prev,
+          [section]: true,
+        }));
+      }
+    }
+  };
+  
   const sectionButton = (label: string, icon: React.ReactNode, section: string) => (
     <button
       onClick={() => toggleSection(section)}
@@ -91,20 +136,28 @@ export default function Sidebar() {
       className={`h-full border-r border-gray-200 bg-white ${isCollapsed ? "w-16" : "w-64"} flex flex-col transition-all duration-200 `}
     >
       {/* Logo at the top of sidebar */}
-      <div className="flex items-center p-4 border-b border-gray-200 relative">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white shadow-sm">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          {!isCollapsed && <span className="text-xl font-bold text-red-600">ExamEase</span>}
-        </Link>
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors absolute right-3 top-4"
-        >
-          {isCollapsed ? <ExpandIcon className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
+      <div className="flex items-center p-4 border-b border-gray-200 relative justify-between">
+  {!isCollapsed && (
+    <Link to="/" className="flex items-center gap-2">
+      <div className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white shadow-sm">
+        <GraduationCap className="h-5 w-5" />
       </div>
+      <span className="text-xl font-bold text-red-600">ExamEase</span>
+    </Link>
+  )}
+
+  {/* עטפתי את הכפתור ב-div חדש */}
+  <div className="flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-md shadow cursor-pointer hover:bg-gray-100">
+    <button
+      onClick={() => setIsCollapsed(!isCollapsed)}
+      className="text-gray-500 hover:text-gray-900 transition-colors"
+      aria-label="Toggle sidebar"
+    >
+      {isCollapsed ? <ExpandIcon className="w-4 h-4 text-red-600" /> : <ChevronLeft className="w-4 h-4" />}
+    </button>
+  </div>
+</div>
+
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1.5">
         {navButton(
@@ -126,49 +179,15 @@ export default function Sidebar() {
                 currentPath.includes("/app/exams") &&
                   (currentPath.includes("filter=all") || !currentPath.includes("filter=")),
               )}
-              {/* {navButton(
-                "Shared by You",
-                <Share2 className="h-4 w-4" />,
-                "/app/exams?filter=shared",
-                currentPath.includes("filter=shared"),
-              )} */}
               {navButton(
                 "Starred",
                 <Star className="h-4 w-4" />,
                 "/app/exams?filter=starred",
                 currentPath.includes("filter=starred"),
               )}
-              
             </div>
           )}
         </div>
-
-        {/* <div className="pt-1.5">
-          {sectionButton("Students", <Users className="h-4 w-4" />, "students")}
-
-          {openSections.students && !isCollapsed && (
-            <div className="ml-6 mt-1.5 space-y-1">
-              {navButton(
-                "All Students",
-                <Users className="h-4 w-4" />,
-                "/app/students/all",
-                currentPath.includes("/app/students/all"),
-              )}
-              {navButton(
-                "Upload List",
-                <FileText className="h-4 w-4" />,
-                "/app/students/upload",
-                currentPath.includes("/app/students/upload"),
-              )}
-              {navButton(
-                "Assign to Exams",
-                <User className="h-4 w-4" />,
-                "/app/students/assign",
-                currentPath.includes("/app/students/assign"),
-              )}
-            </div>
-          )}
-        </div> */}
 
         <div className="pt-1.5">
           {sectionButton("Reports", <BarChart className="h-4 w-4" />, "reports")}
@@ -205,21 +224,19 @@ export default function Sidebar() {
         )}
       </nav>
       <div className="p-4 border-t border-gray-200 bg-gray-50">
-  {user?.id ? (
-    <UserAccess user={user} variant="sidebar" />
-  ) : (
-    <div className="text-center">
-      <p className="text-sm text-gray-500 mb-2">Not signed in</p>
-      <Link to="/authForm">
-        <Button variant="outline" size="sm" className="w-full">
-          Sign In
-        </Button>
-      </Link>
-    </div>
-  )}
-</div>
-
-
+        {user?.id ? (
+          <UserAccess user={user} variant="sidebar" />
+        ) : (
+          <div className="text-center">
+            <p className="text-sm text-gray-500 mb-2">Not signed in</p>
+            <Link to="/authForm">
+              <Button variant="outline" size="sm" className="w-full">
+                Sign In
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

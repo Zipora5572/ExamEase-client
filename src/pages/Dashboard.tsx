@@ -1,6 +1,6 @@
 import type React from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "@/store/store"
@@ -44,14 +44,13 @@ const Dashboard = () => {
   const user = useSelector((state: StoreType) => state.auth.user)
   const exams = useSelector((state: StoreType) => state.exams.exams)
   
-// const bestExam = useMemo(() => {
-//   if (!Array.isArray(exams) || exams.length === 0) return null;
+const bestExam = useMemo(() => {
+  if (!Array.isArray(exams) || exams.length === 0) return null;
 
-//   return exams.reduce((best, current) => {
-//     return (current.averageGrade ?? 0) > (best.averageGrade ?? 0) ? current : best;
-//   }, exams[0]);
-// }, [exams]);
-  // const studentxams = useSelector((state: StoreType) => state.exams.exams)
+  return exams.reduce((best, current) => {
+    return (current.averageGrade ?? 0) > (best.averageGrade ?? 0) ? current : best;
+  }, exams[0]);
+}, [exams]);
   const loading = useSelector((state: StoreType) => state.exams.loading)
   const studentExams = useSelector((state: StoreType) => state.studentExams.examsByUserId)
 
@@ -276,9 +275,7 @@ const Dashboard = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                   {/* <Star className="h-4 w-4 text-yellow-400" />
-                     <Share2 className="h-4 w-4 text-blue-400" /> */}
-
+               
                   <ExamMenu row={item} openModal={openModal} />
                   </div>
                 </div>
@@ -333,12 +330,12 @@ const Dashboard = () => {
     <CardDescription>Highest average grade across all exams</CardDescription>
   </CardHeader>
   <CardContent>
-    {/* <div className="space-y-2">
+    <div className="space-y-2">
       <p className="text-lg font-bold text-green-600">{bestExam?.name}</p>
       <p className="text-sm text-gray-700">
         Average Grade: <span className="font-semibold">{bestExam?.averageGrade?.toFixed(2)}</span>
       </p>
-    </div> */}
+    </div>
   </CardContent>
   <CardFooter>
     <Button
