@@ -1,7 +1,9 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "../store/store"
-import {  getAllExamsByUserId } from "../store/examSlice"
+import { getAllExamsByUserId } from "../store/examSlice"
 import { getStudentExamsByExamId } from "../store/studentExamSlice"
 import { Bar, Doughnut } from "react-chartjs-2"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,6 +27,10 @@ import {
   CheckCircle,
   Clock,
   RefreshCw,
+  Users,
+  TrendingUp,
+  Award,
+  Target,
 } from "lucide-react"
 
 const GradesOverview = () => {
@@ -41,7 +47,7 @@ const GradesOverview = () => {
   const dispatch = useDispatch<AppDispatch>()
   const exams = useSelector((state: StoreType) => state.exams.exams)
   const user = useSelector((state: StoreType) => state.auth.user)
-   const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
+  const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
   const loading = useSelector((state: StoreType) => state.studentExams.loading)
 
   useEffect(() => {
@@ -58,9 +64,7 @@ const GradesOverview = () => {
     setIsRefreshing(true)
     try {
       await dispatch(getStudentExamsByExamId(examId)).unwrap()
-   
     } catch (error) {
-    
     } finally {
       setIsRefreshing(false)
     }
@@ -70,7 +74,7 @@ const GradesOverview = () => {
   const filteredExams = studentExams.filter((exam) => {
     const matchesSearch =
       exam.student.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exam.student.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) 
+      exam.student.lastName?.toLowerCase().includes(searchQuery.toLowerCase())
     if (timeRange === "all") return matchesSearch
 
     if (!exam.checkedAt) return false
@@ -153,20 +157,21 @@ const GradesOverview = () => {
           studentExams.filter((exam) => (exam.grade || 0) < 60).length,
         ],
         backgroundColor: [
-          "rgba(75, 192, 192, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
-          "rgba(255, 159, 64, 0.6)",
-          "rgba(255, 99, 132, 0.6)",
+          "rgba(34, 197, 94, 0.8)",
+          "rgba(59, 130, 246, 0.8)",
+          "rgba(245, 158, 11, 0.8)",
+          "rgba(249, 115, 22, 0.8)",
+          "rgba(239, 68, 68, 0.8)",
         ],
         borderColor: [
-          "rgba(75, 192, 192, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(255, 159, 64, 1)",
-          "rgba(255, 99, 132, 1)",
+          "rgba(34, 197, 94, 1)",
+          "rgba(59, 130, 246, 1)",
+          "rgba(245, 158, 11, 1)",
+          "rgba(249, 115, 22, 1)",
+          "rgba(239, 68, 68, 1)",
         ],
-        borderWidth: 1,
+        borderWidth: 0,
+        borderRadius: 8,
       },
     ],
   }
@@ -177,78 +182,75 @@ const GradesOverview = () => {
       {
         label: "Exams",
         data: [checkedExams, totalStudents - checkedExams],
-        backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
-        borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
-        borderWidth: 1,
+        backgroundColor: ["rgba(34, 197, 94, 0.8)", "rgba(156, 163, 175, 0.8)"],
+        borderColor: ["rgba(34, 197, 94, 1)", "rgba(156, 163, 175, 1)"],
+        borderWidth: 0,
       },
     ],
   }
 
   // Mock data for trends over time
-  
 
   if (loading && !isRefreshing && !selectedExam) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-10 w-64" />
+      <div className="min-h-screen bg-slate-50/50 p-4 md:p-6 lg:p-8">
+        <div className="mx-auto max-w-7xl space-y-8">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-12 w-80" />
             <Skeleton className="h-10 w-32" />
           </div>
-          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-96 w-full rounded-xl" />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex flex-col space-y-6">
+    <div className="min-h-screen bg-slate-50/50 p-4 md:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl space-y-8">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Grades Overview</h1>
-            <p className="text-muted-foreground">Comprehensive view of student performance across exams</p>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Grades Overview</h1>
+            <p className="text-slate-600">Comprehensive view of student performance across exams</p>
           </div>
-          <div className="flex items-center gap-2">
-        
-          <Select value={selectedView} onValueChange={setSelectedView}>
-  <SelectTrigger className="w-[150px]">
-    <SelectValue placeholder="Select view" />
-  </SelectTrigger>
-  <SelectContent className="w-[200px]">
-    <SelectItem value="table">
-      <div className="flex items-center gap-2">
-        <FileText className="h-4 w-4" />
-        Table View
-      </div>
-    </SelectItem>
-    <SelectItem value="bar">
-      <div className="flex items-center gap-2">
-        <BarChart3 className="h-4 w-4" />
-        Bar Chart
-      </div>
-    </SelectItem>
-    <SelectItem value="pie">
-      <div className="flex items-center gap-2">
-        <PieChart className="h-4 w-4" />
-        Pie Chart
-      </div>
-    </SelectItem>
-  </SelectContent>
-</Select>
-
+          <div className="flex items-center gap-3">
+            <Select value={selectedView} onValueChange={setSelectedView}>
+              <SelectTrigger className="w-[180px] border-slate-200 bg-white shadow-sm hover:border-slate-300 focus:border-blue-500 focus:ring-blue-500/20">
+                <SelectValue placeholder="Select view" />
+              </SelectTrigger>
+              <SelectContent className="border-slate-200 bg-white shadow-lg">
+                <SelectItem value="table" className="hover:bg-slate-50">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Table View
+                  </div>
+                </SelectItem>
+                <SelectItem value="bar" className="hover:bg-slate-50">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    Bar Chart
+                  </div>
+                </SelectItem>
+                <SelectItem value="pie" className="hover:bg-slate-50">
+                  <div className="flex items-center gap-2">
+                    <PieChart className="h-4 w-4" />
+                    Pie Chart
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <Select value={selectedExam || ""} onValueChange={setSelectedExam}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-full lg:w-[280px] border-slate-200 bg-white shadow-sm hover:border-slate-300 focus:border-blue-500 focus:ring-blue-500/20">
                 <SelectValue placeholder="Select an exam" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="border-slate-200 bg-white shadow-lg">
                 {exams.map((exam) => (
-                  <SelectItem key={exam.id} value={exam.id.toString()}>
+                  <SelectItem key={exam.id} value={exam.id.toString()} className="hover:bg-slate-50">
                     {exam.name}
                   </SelectItem>
                 ))}
@@ -256,25 +258,33 @@ const GradesOverview = () => {
             </Select>
 
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 type="search"
                 placeholder="Search students..."
-                className="pl-8 md:w-[200px] lg:w-[300px]"
+                className="pl-10 w-full lg:w-[320px] border-slate-200 bg-white shadow-sm hover:border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-full lg:w-[180px] border-slate-200 bg-white shadow-sm hover:border-slate-300 focus:border-blue-500 focus:ring-blue-500/20">
                 <SelectValue placeholder="Time range" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Time</SelectItem>
-                <SelectItem value="week">Last Week</SelectItem>
-                <SelectItem value="month">Last Month</SelectItem>
-                <SelectItem value="year">Last Year</SelectItem>
+              <SelectContent className="border-slate-200 bg-white shadow-lg">
+                <SelectItem value="all" className="hover:bg-slate-50">
+                  All Time
+                </SelectItem>
+                <SelectItem value="week" className="hover:bg-slate-50">
+                  Last Week
+                </SelectItem>
+                <SelectItem value="month" className="hover:bg-slate-50">
+                  Last Month
+                </SelectItem>
+                <SelectItem value="year" className="hover:bg-slate-50">
+                  Last Year
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -284,7 +294,7 @@ const GradesOverview = () => {
             size="sm"
             onClick={() => selectedExam && fetchStudentExams(Number.parseInt(selectedExam))}
             disabled={isRefreshing || !selectedExam}
-            className="flex items-center gap-1"
+            className="flex items-center gap-2 border-slate-200 bg-white shadow-sm hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50"
           >
             {isRefreshing ? (
               <>
@@ -301,77 +311,95 @@ const GradesOverview = () => {
         </div>
 
         {!selectedExam ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <FileText className="h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No Exam Selected</h3>
-            <p className="text-gray-500 max-w-md">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white/60 py-24 shadow-sm backdrop-blur-sm">
+            <div className="rounded-full bg-slate-100 p-6 mb-6">
+              <FileText className="h-12 w-12 text-slate-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-3">No Exam Selected</h3>
+            <p className="text-slate-600 text-center max-w-md leading-relaxed">
               Please select an exam from the dropdown above to view student grades and performance data.
             </p>
           </div>
         ) : (
           <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-                  <User className="h-4 w-4 text-muted-foreground" />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm hover:shadow-md transition-all duration-200">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-slate-600">Total Students</CardTitle>
+                  <div className="rounded-lg bg-blue-50 p-2">
+                    <Users className="h-4 w-4 text-blue-600" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{totalStudents}</div>
-                  <p className="text-xs text-muted-foreground">
+                <CardContent className="pt-0">
+                  <div className="text-3xl font-bold text-slate-900 mb-1">{totalStudents}</div>
+                  <p className="text-sm text-slate-500">
                     {checkedExams} checked, {totalStudents - checkedExams} pending
                   </p>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Average grade</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm hover:shadow-md transition-all duration-200">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-slate-600">Average Grade</CardTitle>
+                  <div className="rounded-lg bg-emerald-50 p-2">
+                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{averagegrade.toFixed(1)}</div>
-                  <Progress value={averagegrade} className="h-2" />
+                <CardContent className="pt-0">
+                  <div className="text-3xl font-bold text-slate-900 mb-1">{averagegrade.toFixed(1)}</div>
+                  <Progress value={averagegrade} className="h-2 bg-slate-100" />
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Highest grade</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm hover:shadow-md transition-all duration-200">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-slate-600">Highest Grade</CardTitle>
+                  <div className="rounded-lg bg-purple-50 p-2">
+                    <Award className="h-4 w-4 text-purple-600" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
+                <CardContent className="pt-0">
+                  <div className="text-3xl font-bold text-slate-900 mb-1">
                     {studentExams.length > 0 ? Math.max(...studentExams.map((exam) => exam.grade || 0)) : "N/A"}
                   </div>
-                  <p className="text-xs text-muted-foreground">Top performing student</p>
+                  <p className="text-sm text-slate-500">Top performing student</p>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm hover:shadow-md transition-all duration-200">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-medium text-slate-600">Completion Rate</CardTitle>
+                  <div className="rounded-lg bg-amber-50 p-2">
+                    <Target className="h-4 w-4 text-amber-600" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
+                <CardContent className="pt-0">
+                  <div className="text-3xl font-bold text-slate-900 mb-1">
                     {totalStudents > 0 ? `${Math.round((checkedExams / totalStudents) * 100)}%` : "0%"}
                   </div>
-                  <Progress value={totalStudents > 0 ? (checkedExams / totalStudents) * 100 : 0} className="h-2" />
+                  <Progress
+                    value={totalStudents > 0 ? (checkedExams / totalStudents) * 100 : 0}
+                    className="h-2 bg-slate-100"
+                  />
                 </CardContent>
               </Card>
             </div>
 
             {selectedView === "table" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Student Grades</CardTitle>
-                  <CardDescription>Detailed breakdown of student performance</CardDescription>
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-semibold text-slate-900">Student Grades</CardTitle>
+                  <CardDescription className="text-slate-600">
+                    Detailed breakdown of student performance
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="rounded-md border">
+                  <div className="overflow-hidden rounded-xl border border-slate-200">
                     <Table>
                       <TableHeader>
-                        <TableRow>
-                          <TableHead className="cursor-pointer" onClick={() => handleSort("studentName")}>
-                            <div className="flex items-center space-x-1">
+                        <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
+                          <TableHead
+                            className="cursor-pointer font-semibold text-slate-700"
+                            onClick={() => handleSort("studentName")}
+                          >
+                            <div className="flex items-center space-x-2">
                               <span>Student</span>
                               {sortConfig.key === "studentName" &&
                                 (sortConfig.direction === "ascending" ? (
@@ -382,9 +410,12 @@ const GradesOverview = () => {
                               {sortConfig.key !== "studentName" && <ArrowUpDown className="h-4 w-4 opacity-50" />}
                             </div>
                           </TableHead>
-                          <TableHead className="cursor-pointer" onClick={() => handleSort("grade")}>
-                            <div className="flex items-center space-x-1">
-                              <span>grade</span>
+                          <TableHead
+                            className="cursor-pointer font-semibold text-slate-700"
+                            onClick={() => handleSort("grade")}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <span>Grade</span>
                               {sortConfig.key === "grade" &&
                                 (sortConfig.direction === "ascending" ? (
                                   <SortAsc className="h-4 w-4" />
@@ -394,9 +425,12 @@ const GradesOverview = () => {
                               {sortConfig.key !== "grade" && <ArrowUpDown className="h-4 w-4 opacity-50" />}
                             </div>
                           </TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="cursor-pointer" onClick={() => handleSort("checkedAt")}>
-                            <div className="flex items-center space-x-1">
+                          <TableHead className="font-semibold text-slate-700">Status</TableHead>
+                          <TableHead
+                            className="cursor-pointer font-semibold text-slate-700"
+                            onClick={() => handleSort("checkedAt")}
+                          >
+                            <div className="flex items-center space-x-2">
                               <span>Checked At</span>
                               {sortConfig.key === "checkedAt" &&
                                 (sortConfig.direction === "ascending" ? (
@@ -412,47 +446,47 @@ const GradesOverview = () => {
                       <TableBody>
                         {sortedExams.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={4} className="h-24 text-center">
+                            <TableCell colSpan={4} className="h-24 text-center text-slate-500">
                               No results found.
                             </TableCell>
                           </TableRow>
                         ) : (
                           sortedExams.map((exam) => (
-                            <TableRow key={exam.id}>
+                            <TableRow key={exam.id} className="hover:bg-slate-50/50 transition-colors">
                               <TableCell>
-                                <div className="flex items-center space-x-2">
-                                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                                    <User className="h-4 w-4 text-muted-foreground" />
+                                <div className="flex items-center space-x-3">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-slate-100 to-slate-200 ring-2 ring-white shadow-sm">
+                                    <User className="h-5 w-5 text-slate-600" />
                                   </div>
                                   <div>
-                                    <div className="font-medium">
+                                    <div className="font-medium text-slate-900">
                                       {exam.student.firstName || "Unknown"}
                                     </div>
-                                    <div className="text-xs text-muted-foreground">ID: {exam.id}</div>
+                                    <div className="text-xs text-slate-500">ID: {exam.id}</div>
                                   </div>
                                 </div>
                               </TableCell>
                               <TableCell>
                                 {exam.isChecked ? (
-                                  <div className="flex flex-col">
-                                    <span className="font-medium">{exam.grade || 0}/100</span>
-                                    <Progress value={exam.grade || 0} className="h-2 w-16" />
+                                  <div className="flex flex-col space-y-2">
+                                    <span className="font-semibold text-slate-900">{exam.grade || 0}/100</span>
+                                    <Progress value={exam.grade || 0} className="h-2 w-20 bg-slate-100" />
                                   </div>
                                 ) : (
-                                  <span className="text-muted-foreground">Not graded</span>
+                                  <span className="text-slate-400">Not graded</span>
                                 )}
                               </TableCell>
                               <TableCell>
                                 {exam.isChecked ? (
-                                  <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">
+                                  <Badge
+                                    variant="secondary"
+                                    className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                  >
                                     <CheckCircle className="mr-1 h-3 w-3" />
                                     Checked
                                   </Badge>
                                 ) : (
-                                  <Badge
-                                    variant="outline"
-                                    className="bg-red-100 text-red-800 hover:bg-red-100"
-                                  >
+                                  <Badge variant="secondary" className="bg-amber-50 text-amber-700 hover:bg-amber-100">
                                     <Clock className="mr-1 h-3 w-3" />
                                     Pending
                                   </Badge>
@@ -460,12 +494,14 @@ const GradesOverview = () => {
                               </TableCell>
                               <TableCell>
                                 {exam.checkedAt ? (
-                                  <div className="flex items-center">
-                                    <Calendar className="mr-1 h-3 w-3 text-muted-foreground" />
-                                    <span>{new Date(exam.checkedAt).toLocaleDateString()}</span>
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-slate-400" />
+                                    <span className="text-slate-600">
+                                      {new Date(exam.checkedAt).toLocaleDateString()}
+                                    </span>
                                   </div>
                                 ) : (
-                                  <span className="text-muted-foreground">-</span>
+                                  <span className="text-slate-400">-</span>
                                 )}
                               </TableCell>
                             </TableRow>
@@ -479,21 +515,40 @@ const GradesOverview = () => {
             )}
 
             {selectedView === "bar" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>grade Distribution</CardTitle>
-                  <CardDescription>Breakdown of student grades by range</CardDescription>
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-semibold text-slate-900">Grade Distribution</CardTitle>
+                  <CardDescription className="text-slate-600">Breakdown of student grades by range</CardDescription>
                 </CardHeader>
-                <CardContent className="px-2">
+                <CardContent className="p-6">
                   <div className="h-80">
                     <Bar
                       data={gradedistribution}
                       options={{
                         responsive: true,
                         maintainAspectRatio: false,
+                        plugins: {
+                          legend: {
+                            display: false,
+                          },
+                        },
                         scales: {
                           y: {
                             beginAtZero: true,
+                            grid: {
+                              color: "rgba(148, 163, 184, 0.1)",
+                            },
+                            border: {
+                              display: false,
+                            },
+                          },
+                          x: {
+                            grid: {
+                              display: false,
+                            },
+                            border: {
+                              display: false,
+                            },
                           },
                         },
                       }}
@@ -504,13 +559,13 @@ const GradesOverview = () => {
             )}
 
             {selectedView === "pie" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Exam Status</CardTitle>
-                  <CardDescription>Checked vs. unchecked exams</CardDescription>
+              <Card className="border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-semibold text-slate-900">Exam Status</CardTitle>
+                  <CardDescription className="text-slate-600">Checked vs. unchecked exams</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-80 flex items-center justify-center">
+                  <div className="h-80 flex items-center justify-center p-4">
                     <Doughnut
                       data={statusDistribution}
                       options={{
@@ -519,6 +574,10 @@ const GradesOverview = () => {
                         plugins: {
                           legend: {
                             position: "bottom",
+                            labels: {
+                              usePointStyle: true,
+                              padding: 20,
+                            },
                           },
                         },
                       }}
@@ -527,8 +586,6 @@ const GradesOverview = () => {
                 </CardContent>
               </Card>
             )}
-
-         
           </>
         )}
       </div>

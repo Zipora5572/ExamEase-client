@@ -82,22 +82,26 @@ const ExamRowActions = ({
                     View Details
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={handleCheckExam}
-                    disabled={exam.isChecked || checkingStatus[exam.id] === "pending"}
-                    className="text-gray-700 focus:text-gray-900 focus:bg-gray-100"
-                >
-                    {checkingStatus[exam.id] === "pending" ? (
-                        <>
-                            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                            Checking...
-                        </>
-                    ) : (
-                        <>
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Check Exam
-                        </>
-                    )}
-                </DropdownMenuItem>
+    onSelect={async (e) => {
+        e.preventDefault(); // מונע סגירת התפריט
+        await handleCheckExam();
+    }}
+    disabled={exam.isChecked || checkingStatus[exam.id] === "pending"}
+    className="text-gray-700 focus:text-gray-900 focus:bg-gray-100"
+>
+    {checkingStatus[exam.id] === "pending" ? (
+        <>
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+            Checking...
+        </>
+    ) : (
+        <>
+            <CheckCircle className="mr-2 h-4 w-4" />
+            Check Exam
+        </>
+    )}
+</DropdownMenuItem>
+
                 <DropdownMenuSeparator className="bg-gray-200" />
                 <DropdownMenuItem className="text-gray-700 focus:text-gray-900 focus:bg-gray-100">
                     <FileText className="mr-2 h-4 w-4" />

@@ -1,12 +1,10 @@
-"use client"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "../../store/store"
 import { toggleStarExamFile } from "../../store/examSlice"
 import { toggleStarFolder } from "../../store/folderSlice"
-import { Star, Copy, Eye, Check, Users } from "lucide-react"
+import { Star, Copy, Eye, Check } from "lucide-react"
 import type { ExamFileType, ExamFolderType } from "../../models/Exam"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { Button } from "../ui/button"
@@ -41,15 +39,6 @@ const ExamRowButtons = ({ row }: { row: ExamFileType | ExamFolderType }) => {
     navigate("/app/students-exams", { state: { examId: row.id, examFileTeacherName: row.namePrefix } })
   }
 
-  const handleStudents = () => {
-    navigate("/app/students-exams", {
-      state: {
-        examId: row.id,
-        examFileTeacherName: row.namePrefix,
-        initialTab: "list",
-      },
-    })
-  }
 
   return (
     <div className="flex items-center gap-1">
@@ -126,26 +115,6 @@ const ExamRowButtons = ({ row }: { row: ExamFileType | ExamFolderType }) => {
             </Tooltip>
           </TooltipProvider>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 transition-all duration-200 hover:scale-110 group bg-transparent border-none shadow-none"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleStudents()
-                  }}
-                >
-                  <Users className="h-4 w-4 text-slate-400 group-hover:text-slate-700 transition-colors" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-slate-800 text-white border-slate-600 text-xs">
-                <p className="text-xs font-medium">Manage students</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </>
       )}
     </div>
