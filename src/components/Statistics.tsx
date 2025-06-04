@@ -129,39 +129,7 @@ const Statistics = () => {
     ],
   }
 
-  // Question difficulty analysis (mock data)
-  const questionDifficulty = {
-    labels: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10"],
-    datasets: [
-      {
-        label: "Average grade (%)",
-        data: [85, 65, 92, 45, 78, 55, 88, 72, 60, 50],
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1,
-      },
-    ],
-  }
-
-  // Performance by topic (mock data)
-  const topicPerformance = {
-    labels: ["Grammar", "Vocabulary", "Reading", "Writing", "Listening", "Speaking"],
-    datasets: [
-      {
-        label: "Average grade",
-        data: [75, 82, 68, 90, 65, 78],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
-          "rgba(75, 192, 192, 0.6)",
-          "rgba(153, 102, 255, 0.6)",
-          "rgba(255, 159, 64, 0.6)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  }
+  
 
   if (loading && !isRefreshing && !selectedExam) {
     return (
@@ -288,11 +256,10 @@ const Statistics = () => {
 
             {/* Tabs for different chart views */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-              <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full max-w-2xl">
+              <TabsList className="grid grid-cols-2 md:grid-cols-2 w-full max-w-2xl">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="distribution">grade Distribution</TabsTrigger>
-                <TabsTrigger value="questions">Question Analysis</TabsTrigger>
-                <TabsTrigger value="topics">Topic Performance</TabsTrigger>
+               
               </TabsList>
 
               <TabsContent value="overview" className="mt-6 space-y-6">
@@ -379,81 +346,8 @@ const Statistics = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="questions" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Question Difficulty Analysis</CardTitle>
-                    <CardDescription>Average grades per question</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-96">
-                      <Bar
-                        data={questionDifficulty}
-                        options={{
-                          responsive: true,
-                          maintainAspectRatio: false,
-                          plugins: {
-                            legend: {
-                              position: "top" as const,
-                            },
-                          },
-                          scales: {
-                            y: {
-                              beginAtZero: true,
-                              max: 100,
-                              title: {
-                                display: true,
-                                text: "Average grade (%)",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </div>
-                  </CardContent>
-                  <CardFooter className="text-sm text-muted-foreground">
-                    Lower grades indicate more difficult questions
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="topics" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Performance by Topic</CardTitle>
-                    <CardDescription>Average grades across different subject areas</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-96">
-                      <Bar
-                        data={topicPerformance}
-                        options={{
-                          responsive: true,
-                          maintainAspectRatio: false,
-                          plugins: {
-                            legend: {
-                              position: "top" as const,
-                            },
-                          },
-                          scales: {
-                            y: {
-                              beginAtZero: true,
-                              max: 100,
-                              title: {
-                                display: true,
-                                text: "Average grade",
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </div>
-                  </CardContent>
-                  <CardFooter className="text-sm text-muted-foreground">
-                    Identifies strengths and areas for improvement
-                  </CardFooter>
-                </Card>
-              </TabsContent>
+            
+              
             </Tabs>
           </>
         )}

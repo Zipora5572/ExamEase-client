@@ -24,6 +24,7 @@ interface ExamsDisplayProps {
   setFolderPath: React.Dispatch<React.SetStateAction<{ id: number | null; name: string }[]>>
 }
 
+
 const ExamsDisplay = ({
   exams,
   folders,
@@ -39,6 +40,19 @@ const ExamsDisplay = ({
   const [displayMode, setDisplayMode] = useState<"table" | "grid">("table")
   const [filteredExams, setFilteredExams] = useState<ExamFileType[]>(exams || [])
   const [filteredFolders, setFilteredFolders] = useState<ExamFolderType[]>(folders)
+
+  // 🆕 טוען מצב תצוגה מ-localStorage
+  useEffect(() => {
+    const savedMode = localStorage.getItem("exam-display-mode")
+    if (savedMode === "table" || savedMode === "grid") {
+      setDisplayMode(savedMode)
+    }
+  }, [])
+
+  const handleDisplayModeChange = (mode: "table" | "grid") => {
+    setDisplayMode(mode)
+    localStorage.setItem("exam-display-mode", mode) // 🆕 שמירת מצב
+  }
 
   useEffect(() => {
     if (viewMode === "folder" && currentFolderId !== null) {
@@ -63,7 +77,6 @@ const ExamsDisplay = ({
     setSelectedFile({ name: fileName, url: fileUrl })
   }
 
-
   if (selectedFile) {
     navigate("/app/viewExam", { state: { fileName: selectedFile.name, fileUrl: selectedFile.url } })
   }
@@ -84,7 +97,7 @@ const ExamsDisplay = ({
     <>
       <div className="space-y-6">
         <div className="flex items-center justify-end">
-          <ExamViewToggle viewMode={displayMode} onViewModeChange={setDisplayMode} />
+          <ExamViewToggle viewMode={displayMode} onViewModeChange={handleDisplayModeChange} />
         </div>
 
         {displayMode === "table" ? (

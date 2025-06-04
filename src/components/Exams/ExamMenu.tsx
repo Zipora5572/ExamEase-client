@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -34,7 +36,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import LanguageDetectionDialog from "../LangDetectionDialog"
 
 interface ExamMenuProps {
- 
   row: ExamFileType | ExamFolderType
   openModal: (data: {
     title: string
@@ -46,7 +47,7 @@ interface ExamMenuProps {
   }) => void
 }
 
-const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
+const ExamMenu = ({ openModal, row }: ExamMenuProps) => {
   const [newName, setNewName] = useState<string>(row.name)
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
@@ -115,60 +116,75 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
   }
 
   const handleUploadStudentList = () => {
+    setUploadError(null) // Reset error state when opening modal
     openModal({
       title: "Upload Students Excel",
       children: (
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+        <div className="space-y-6">
+          <p className="text-sm text-slate-600 leading-relaxed">
             Upload an Excel file containing the list of students for this exam. Our AI will automatically match students
             to their exams.
           </p>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
-            <h4 className="text-sm font-medium text-gray-800 mb-3">Excel Template Format</h4>
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
+            <h4 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <FileSpreadsheet className="h-4 w-4 text-slate-600" />
+              Excel Template Format
+            </h4>
             <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 text-sm">
-                <thead className="bg-gray-100">
+              <table className="min-w-full border border-slate-200 text-sm rounded-md overflow-hidden">
+                <thead className="bg-slate-100">
                   <tr>
-                    <th className="border border-gray-200 px-3 py-2 text-left">Student ID</th>
-                    <th className="border border-gray-200 px-3 py-2 text-left">First Name</th>
-                    <th className="border border-gray-200 px-3 py-2 text-left">Last Name</th>
-                    <th className="border border-gray-200 px-3 py-2 text-left">Email</th>
-                    <th className="border border-gray-200 px-3 py-2 text-left">Class</th>
+                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">
+                      Student ID
+                    </th>
+                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">
+                      First Name
+                    </th>
+                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">
+                      Last Name
+                    </th>
+                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">Email</th>
+                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">Class</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="border border-gray-200 px-3 py-2">12345</td>
-                    <td className="border border-gray-200 px-3 py-2">John</td>
-                    <td className="border border-gray-200 px-3 py-2">Smith</td>
-                    <td className="border border-gray-200 px-3 py-2">john.smith@example.com</td>
-                    <td className="border border-gray-200 px-3 py-2">Class A</td>
+                  <tr className="bg-white">
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">12345</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">John</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Smith</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">john.smith@example.com</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Class A</td>
                   </tr>
-                  <tr>
-                    <td className="border border-gray-200 px-3 py-2">67890</td>
-                    <td className="border border-gray-200 px-3 py-2">Jane</td>
-                    <td className="border border-gray-200 px-3 py-2">Doe</td>
-                    <td className="border border-gray-200 px-3 py-2">jane.doe@example.com</td>
-                    <td className="border border-gray-200 px-3 py-2">Class B</td>
+                  <tr className="bg-slate-25">
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">67890</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Jane</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Doe</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">jane.doe@example.com</td>
+                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Class B</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div className="mt-3">
-              <Button size="sm" variant="outline" className="text-xs" onClick={() => window.open("#", "_blank")}>
-                <Download className="h-3 w-3 mr-1" />
+            <div className="mt-4">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs font-medium hover:bg-slate-100 transition-colors"
+                onClick={() => window.open("#", "_blank")}
+              >
+                <Download className="h-3 w-3 mr-2" />
                 Download Template
               </Button>
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-100 rounded-md p-3">
-            <h4 className="text-sm font-medium text-blue-800 flex items-center">
-              <HelpCircle className="h-4 w-4 mr-1" />
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h4 className="text-sm font-semibold text-red-800 flex items-center gap-2 mb-3">
+              <HelpCircle className="h-4 w-4" />
               How the Process Works
             </h4>
-            <ol className="text-xs text-blue-700 mt-1 ml-5 list-decimal">
+            <ol className="text-sm text-red-700 space-y-1 ml-5 list-decimal">
               <li>Upload your student roster Excel file first</li>
               <li>Then upload scanned student exams</li>
               <li>Our AI will automatically identify student names on the exams</li>
@@ -187,7 +203,7 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
           <label htmlFor="upload-student-list-input">
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full h-11 font-medium hover:bg-slate-50 transition-colors text-slate-700"
               onClick={() => document.getElementById("upload-student-list-input")?.click()}
             >
               <FileSpreadsheet className="mr-2 h-4 w-4" />
@@ -196,10 +212,10 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
           </label>
 
           {uploadError && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="border-red-200 bg-red-50">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{uploadError}</AlertDescription>
+              <AlertTitle className="text-red-800">Error</AlertTitle>
+              <AlertDescription className="text-red-700">{uploadError}</AlertDescription>
             </Alert>
           )}
         </div>
@@ -209,16 +225,21 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
         const filesToUpload = selectedFilesRef.current
         if (!filesToUpload) {
           setUploadError("Please select a file to upload")
-          return
+          throw new Error("No file selected") // Prevent modal from closing
         }
 
         try {
           await StudentService.uploadStudentList({ examId: row.id }, filesToUpload[0])
           dispatch(getAllExamsByUserId(user?.id))
-         
+          // Clear the file selection after successful upload
+          setSelectedFiles(null)
+          selectedFilesRef.current = null
+          setUploadError(null)
+          // Modal will close automatically on successful completion
         } catch (error) {
           console.error("Error uploading student list:", error)
           setUploadError("Failed to upload student list. Please try again.")
+          throw error // Prevent modal from closing on error
         }
       },
     })
@@ -229,26 +250,27 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
   }
 
   const showUploadExamsModal = (language: "english" | "hebrew" = "english") => {
+    setUploadError(null) // Reset error state when opening modal
     openModal({
       title: "Upload Student Exams",
       children: (
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+        <div className="space-y-6">
+          <p className="text-sm text-slate-600 leading-relaxed">
             Choose to upload a full folder of student exams or a single file. Our AI will process them and automatically
             match students to their exams.
           </p>
 
-          <div className="bg-blue-50 border border-blue-100 rounded-md p-3 mb-4">
-            <h4 className="text-sm font-medium text-blue-800 flex items-center">
-              <FileText className="h-4 w-4 mr-1" />
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h4 className="text-sm font-semibold text-red-800 flex items-center gap-2 mb-2">
+              <FileText className="h-4 w-4" />
               AI-Powered Processing
             </h4>
-            <p className="text-xs text-blue-700 mt-1">
+            <p className="text-sm text-red-700">
               Our system will automatically identify student names on the exams and match them to your student list.
             </p>
           </div>
 
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-3">
             <input
               accept="*"
               style={{ display: "none" }}
@@ -261,7 +283,7 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
             <label htmlFor="upload-folder-input">
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full h-11 font-medium hover:bg-slate-50 transition-colors text-slate-700"
                 onClick={() => document.getElementById("upload-folder-input")?.click()}
               >
                 <Upload className="mr-2 h-4 w-4" />
@@ -279,7 +301,7 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
             <label htmlFor="upload-student-file-input">
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full h-11 font-medium hover:bg-slate-50 transition-colors text-slate-700"
                 onClick={() => document.getElementById("upload-student-file-input")?.click()}
               >
                 <Upload className="mr-2 h-4 w-4" />
@@ -289,22 +311,33 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
           </div>
 
           {uploadError && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="border-red-200 bg-red-50">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{uploadError}</AlertDescription>
+              <AlertTitle className="text-red-800">Error</AlertTitle>
+              <AlertDescription className="text-red-700">{uploadError}</AlertDescription>
             </Alert>
           )}
         </div>
       ),
       confirmText: "Upload",
-      onConfirm: () => {
+      onConfirm: async () => {
         const filesToUpload = selectedFilesRef.current
         if (!filesToUpload || filesToUpload.length === 0) {
           setUploadError("Please select files to upload")
-          return
+          throw new Error("No files selected") // Prevent modal from closing
         }
-        handleFilesUpload(filesToUpload, language)
+
+        try {
+          await handleFilesUpload(filesToUpload, language)
+          // Clear the file selection after successful upload
+          setSelectedFiles(null)
+          selectedFilesRef.current = null
+          setUploadError(null)
+          // Modal will close automatically on successful completion
+        } catch (error) {
+          // Error is already handled in handleFilesUpload
+          throw error // Prevent modal from closing on error
+        }
       },
     })
   }
@@ -326,6 +359,7 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
     } catch (error) {
       console.error("Error uploading student exams:", error)
       setUploadError("Failed to upload student exams. Please try again.")
+      throw error // Re-throw to prevent modal from closing
     }
   }
 
@@ -341,7 +375,7 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
     openModal({
       title: "Delete",
       children: (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-slate-600 leading-relaxed">
           You and the people you shared this {isFolder ? "folder" : "file"} with won't be able to access it once it has
           been deleted. The {isFolder ? "folder" : "file"} will be permanently deleted, and this action can't be undone.
         </div>
@@ -369,6 +403,15 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
     })
   }
 
+  useEffect(() => {
+    return () => {
+      // Cleanup file selection when component unmounts
+      setSelectedFiles(null)
+      selectedFilesRef.current = null
+      setUploadError(null)
+    }
+  }, [row.id])
+
   return (
     <>
       <DropdownMenu>
@@ -379,13 +422,13 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
             onClick={(event) => {
               event.stopPropagation()
             }}
-            className="text-gray-400 hover:text-gray-700 focus:outline-none cursor-pointer h-8 w-8"
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 focus:outline-none cursor-pointer h-8 w-8 rounded-lg transition-all duration-200"
           >
             <MoreHorizontal className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="w-56 shadow-lg border-slate-200">
           {/* File-specific options */}
           {!isFolder && (
             <>
@@ -398,9 +441,10 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
                           e.stopPropagation()
                           handleUploadStudentList()
                         }}
+                        className="cursor-pointer hover:bg-slate-50 focus:bg-slate-50 text-slate-700"
                       >
-                        <FileSpreadsheet className="mr-2 h-4 w-4" />
-                        <span>Upload Students Excel</span>
+                        <FileSpreadsheet className="mr-3 h-4 w-4 text-slate-500" />
+                        <span className="font-medium">Upload Students Excel</span>
                       </DropdownMenuItem>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -417,9 +461,10 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
                           e.stopPropagation()
                           handleUploadStudentExams()
                         }}
+                        className="cursor-pointer hover:bg-slate-50 focus:bg-slate-50 text-slate-700"
                       >
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span>Upload Student Exams</span>
+                        <Upload className="mr-3 h-4 w-4 text-slate-500" />
+                        <span className="font-medium">Upload Student Exams</span>
                       </DropdownMenuItem>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -428,18 +473,19 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
                   </Tooltip>
                 </TooltipProvider>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="bg-slate-200" />
 
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDownload()
                 }}
+                className="cursor-pointer hover:bg-slate-50 focus:bg-slate-50 text-slate-700"
               >
-                <Download className="mr-2 h-4 w-4" />
-                <span>Download</span>
+                <Download className="mr-3 h-4 w-4 text-slate-500" />
+                <span className="font-medium">Download</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="bg-slate-200" />
             </>
           )}
 
@@ -449,22 +495,23 @@ const ExamMenu = ({  openModal, row }: ExamMenuProps) => {
               e.stopPropagation()
               handleRename()
             }}
+            className="cursor-pointer hover:bg-slate-50 focus:bg-slate-50 text-slate-700"
           >
-            <Pencil className="mr-2 h-4 w-4" />
-            <span>Rename</span>
+            <Pencil className="mr-3 h-4 w-4 text-slate-500" />
+            <span className="font-medium">Rename</span>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-slate-200" />
 
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation()
               handleDelete()
             }}
-            className="text-red-600 focus:text-red-600"
+            className="text-red-600 focus:text-red-600 hover:bg-red-50 focus:bg-red-50 cursor-pointer"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
-            <span>Delete</span>
+            <Trash2 className="mr-3 h-4 w-4" />
+            <span className="font-medium">Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

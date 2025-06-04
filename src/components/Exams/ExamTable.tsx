@@ -19,21 +19,25 @@ interface ExamTableProps {
 }
 
 const ExamTable = ({ exams, folders, openFolder, openModal, handleRowClick }: ExamTableProps) => {
-
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-50/50 hover:bg-gray-50/50">
-            <TableHead className="w-12 font-semibold text-gray-700"></TableHead>
-            <TableHead className="font-semibold text-gray-700">Name</TableHead>
-            <TableHead className="w-48 font-semibold text-gray-700"></TableHead>
-            <TableHead className="font-semibold text-gray-700">Status</TableHead>
-            <TableHead className="font-semibold text-gray-700">Submissions</TableHead>
-            <TableHead className="font-semibold text-gray-700">Average</TableHead>
-            {/* <TableHead className="font-semibold text-gray-700">Sharing</TableHead> */}
-            <TableHead className="font-semibold text-gray-700">Modified</TableHead>
-            <TableHead className="w-10 font-semibold text-gray-700"></TableHead>
+          <TableRow className="bg-slate-50/50 hover:bg-slate-50/50 border-b border-slate-200">
+            <TableHead className="w-12 font-semibold text-slate-700 text-xs uppercase tracking-wide pl-6 py-4"></TableHead>
+            <TableHead className="font-semibold text-slate-700 text-xs uppercase tracking-wide py-4">Name</TableHead>
+            <TableHead className="w-48 font-semibold text-slate-700 text-xs uppercase tracking-wide py-4">
+              Actions
+            </TableHead>
+            <TableHead className="font-semibold text-slate-700 text-xs uppercase tracking-wide py-4">Status</TableHead>
+            <TableHead className="font-semibold text-slate-700 text-xs uppercase tracking-wide py-4">
+              Submissions
+            </TableHead>
+            <TableHead className="font-semibold text-slate-700 text-xs uppercase tracking-wide py-4">Average</TableHead>
+            <TableHead className="font-semibold text-slate-700 text-xs uppercase tracking-wide py-4">
+              Modified
+            </TableHead>
+            <TableHead className="w-10 font-semibold text-slate-700 text-xs uppercase tracking-wide pr-6 py-4"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -51,8 +55,10 @@ const ExamTable = ({ exams, folders, openFolder, openModal, handleRowClick }: Ex
                 />
               ))}
               {exams.length > 0 && (
-                <TableRow className="h-2 bg-gray-50/30">
-                  <td colSpan={9} className="p-0"></td>
+                <TableRow className="h-4 border-none">
+                  <td colSpan={8} className="p-0 border-none">
+                    <div className="h-px bg-slate-200 mx-6"></div>
+                  </td>
                 </TableRow>
               )}
             </>

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, StoreType } from "../store/store"
 import {  getAllExamsByUserId } from "../store/examSlice"
 import { getStudentExamsByExamId } from "../store/studentExamSlice"
-import { Line, Radar } from "react-chartjs-2"
+import { Line } from "react-chartjs-2"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -13,16 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-// import { useToast } from "@/hooks/use-toast"
 import {
-  Download,
-  User,
+    User,
   CheckCircle,
   Clock,
   RefreshCw,
   Mail,
-  Phone,
-  BookOpen,
   Award,
   TrendingUp,
   TrendingDown,
@@ -37,7 +33,6 @@ const StudentReport = () => {
   const [isPrinting, setIsPrinting] = useState(false)
 
   const dispatch = useDispatch<AppDispatch>()
-  // const { toast } = useToast()
 
   const exams = useSelector((state: StoreType) => state.exams.exams)
   const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
@@ -57,17 +52,10 @@ const StudentReport = () => {
     setIsRefreshing(true)
     try {
       await dispatch(getStudentExamsByExamId(examId)).unwrap()
-      // toast({
-      //   title: "Success",
-      //   description: "Student data loaded successfully",
-      //   variant: "success",
-      // })
+  
+    
     } catch (error) {
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to load student data",
-      //   variant: "destructive",
-      // })
+   
     } finally {
       setIsRefreshing(false)
     }
@@ -75,13 +63,15 @@ const StudentReport = () => {
 
   // Get unique students from all exams
   const uniqueStudents = Array.from(
-    new Set(studentExams.map((exam) => exam.student.firstName || "Unknown")),
+    new Map(
+      studentExams.map((exam) => [exam.student.id, exam.student])
+    ).values()
   )
+  const selectedStudentObj = uniqueStudents.find(s => s.id.toString() === selectedStudent)
+const studentData = selectedStudent
+  ? studentExams.filter((exam) => exam.student.id.toString() === selectedStudent)
+  : []
 
-  // Filter exams for selected student
-  const studentData = selectedStudent
-    ? studentExams.filter((exam) => (exam.student.firstName ) === selectedStudent)
-    : []
 
   // Calculate student statistics
   const averagegrade =
@@ -119,22 +109,6 @@ const StudentReport = () => {
     ],
   }
 
-  // Skill radar data (mock data for demonstration)
-  const skillsData = {
-    labels: ["Reading", "Writing", "Listening", "Speaking", "Grammar", "Vocabulary"],
-    datasets: [
-      {
-        label: "Skills",
-        data: [85, 70, 90, 65, 75, 80],
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        pointBackgroundColor: "rgba(54, 162, 235, 1)",
-        pointBorderColor: "#fff",
-        pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgba(54, 162, 235, 1)",
-      },
-    ],
-  }
 
   const handlePrintReport = () => {
     setIsPrinting(true)
@@ -142,14 +116,7 @@ const StudentReport = () => {
     // Simulate printing delay
     setTimeout(() => {
       setIsPrinting(false)
-      // toast({
-      //   title: "Report generated",
-      //   description: "Student report has been prepared for printing",
-      //   variant: "success",
-      // })
-
-      // In a real implementation, this would trigger the browser's print dialog
-      // window.print()
+     
     }, 1500)
   }
 
@@ -195,22 +162,7 @@ const StudentReport = () => {
                 </>
               )}
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => {
-                // toast({
-                //   title: "Export successful",
-                //   description: "Student report exported as PDF",
-                //   variant: "success",
-                // })
-              }}
-              disabled={!selectedStudent}
-            >
-              <Download className="h-4 w-4" />
-              Export PDF
-            </Button>
+           
           </div>
         </div>
 
@@ -220,11 +172,12 @@ const StudentReport = () => {
               <SelectValue placeholder="Select a student" />
             </SelectTrigger>
             <SelectContent>
-              {uniqueStudents.map((student) => (
-                <SelectItem key={student} value={student}>
-                  {student}
-                </SelectItem>
-              ))}
+            {uniqueStudents.map((student) => (
+  <SelectItem key={student.id} value={student.id.toString()}>
+    {student.firstName} {student.lastName}
+  </SelectItem>
+))}
+
             </SelectContent>
           </Select>
 
@@ -295,19 +248,15 @@ const StudentReport = () => {
                       <User className="h-8 w-8 text-gray-500" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-medium">{selectedStudent}</h3>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Mail className="mr-2 h-4 w-4" />
-                        <span>student@example.com</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Phone className="mr-2 h-4 w-4" />
-                        <span>+1 (555) 123-4567</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        <span>Grade 10</span>
-                      </div>
+                    <h3 className="text-xl font-medium">
+  {selectedStudentObj?.firstName} {selectedStudentObj?.lastName}
+</h3>
+<div className="flex items-center text-sm text-gray-500">
+  <Mail className="mr-2 h-4 w-4" />
+  <span>{selectedStudentObj?.email || "No email available"}</span>
+</div>
+
+
                     </div>
                   </div>
                 </CardContent>
@@ -368,9 +317,8 @@ const StudentReport = () => {
             </div>
 
             <Tabs defaultValue="performance" className="w-full">
-              <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsList className="grid w-full max-w-md grid-cols-2">
                 <TabsTrigger value="performance">Performance</TabsTrigger>
-                <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
                 <TabsTrigger value="exams">Exam History</TabsTrigger>
               </TabsList>
 
@@ -444,52 +392,7 @@ const StudentReport = () => {
                 </div>
               </TabsContent>
 
-              <TabsContent value="skills" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Skills Breakdown</CardTitle>
-                    <CardDescription>Analysis of student's proficiency across different skill areas</CardDescription>
-                  </CardHeader>
-                  <CardContent className="h-80">
-                    <Radar
-                      data={skillsData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                          r: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                              stepSize: 20,
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Detailed Skills Analysis</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {skillsData.labels.map((skill, index) => (
-                        <div key={skill} className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{skill}</span>
-                            <span className="text-sm text-gray-500">{skillsData.datasets[0].data[index]}%</span>
-                          </div>
-                          <Progress value={skillsData.datasets[0].data[index]} className="h-2" />
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
+          
               <TabsContent value="exams" className="space-y-4">
                 <Card>
                   <CardHeader>
