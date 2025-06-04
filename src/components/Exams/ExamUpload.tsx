@@ -92,13 +92,17 @@ const ExamUpload = ({ folderId }: { folderId: number | undefined }) => {
     <div>
       <input accept="*" ref={fileInputRef} style={{ display: "none" }} type="file" onChange={handleFileChange} />
       <Button
-        type="button"
-        onClick={() => fileInputRef.current?.click()}
-        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-      >
-        <Upload className="h-4 w-4 mr-2" />
-        Upload Exam
-      </Button>
+  type="button"
+  onClick={() => fileInputRef.current?.click()}
+  variant="ghost"
+  size="sm"
+  className="cursor-pointer font-normal"
+>
+  <Upload className="h-4 w-4 mr-2" />
+  Upload Exam
+</Button>
+
+
 
       <LanguageDetectionDialog
         open={showLanguageDialog}

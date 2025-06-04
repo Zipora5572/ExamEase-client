@@ -9,7 +9,7 @@ import ModalWrapper from "../ModalWrapper"
 import useModal from "../../hooks/useModal"
 import NoDocuments from "../NoDocuments"
 import ExamGrid from "./ExamGrid"
-import ExamViewToggle from "./ExamViewTable"
+import ExamViewToggle from "./ExamViewToggle"
 import ExamTable from "./ExamTable"
 
 interface ExamsDisplayProps {
