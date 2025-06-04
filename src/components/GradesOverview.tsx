@@ -13,7 +13,6 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-  Download,
   FileText,
   Search,
   SortAsc,
@@ -211,47 +210,33 @@ const GradesOverview = () => {
             <p className="text-muted-foreground">Comprehensive view of student performance across exams</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => {
-                // toast({
-                //   title: "Export successful",
-                //   description: "Grades data exported as Excel file",
-                //   variant: "success",
-                // })
-              }}
-            >
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
-            <Select value={selectedView} onValueChange={setSelectedView}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Select view" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="table">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Table View
-                  </div>
-                </SelectItem>
-                <SelectItem value="bar">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4" />
-                    Bar Chart
-                  </div>
-                </SelectItem>
-                <SelectItem value="pie">
-                  <div className="flex items-center gap-2">
-                    <PieChart className="h-4 w-4" />
-                    Pie Chart
-                  </div>
-                </SelectItem>
-               
-              </SelectContent>
-            </Select>
+        
+          <Select value={selectedView} onValueChange={setSelectedView}>
+  <SelectTrigger className="w-[150px]">
+    <SelectValue placeholder="Select view" />
+  </SelectTrigger>
+  <SelectContent className="w-[200px]">
+    <SelectItem value="table">
+      <div className="flex items-center gap-2">
+        <FileText className="h-4 w-4" />
+        Table View
+      </div>
+    </SelectItem>
+    <SelectItem value="bar">
+      <div className="flex items-center gap-2">
+        <BarChart3 className="h-4 w-4" />
+        Bar Chart
+      </div>
+    </SelectItem>
+    <SelectItem value="pie">
+      <div className="flex items-center gap-2">
+        <PieChart className="h-4 w-4" />
+        Pie Chart
+      </div>
+    </SelectItem>
+  </SelectContent>
+</Select>
+
           </div>
         </div>
 

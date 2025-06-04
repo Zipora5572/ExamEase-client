@@ -22,16 +22,24 @@ import {
   Award,
   TrendingUp,
   TrendingDown,
-  Printer,
+  FileText,
 } from "lucide-react"
+import ExportDialog from "./StudentsExams/StudentExamsList/ExportDialog"
 
 const StudentReport = () => {
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null)
   const [selectedExam, setSelectedExam] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState("all")
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [isPrinting, setIsPrinting] = useState(false)
+  const [isPrinting] = useState(false)
 
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
+  const [exportFormat, setExportFormat] = useState("pdf")
+  const [exportOptions, setExportOptions] = useState({
+    includeGrades: true,
+    includeComments: true,
+    includeTimestamps: true,
+  })
   const dispatch = useDispatch<AppDispatch>()
 
   const exams = useSelector((state: StoreType) => state.exams.exams)
@@ -109,17 +117,6 @@ const studentData = selectedStudent
     ],
   }
 
-
-  const handlePrintReport = () => {
-    setIsPrinting(true)
-
-    // Simulate printing delay
-    setTimeout(() => {
-      setIsPrinting(false)
-     
-    }, 1500)
-  }
-
   if (loading && !isRefreshing && !selectedExam) {
     return (
       <div className="container mx-auto py-8">
@@ -143,25 +140,26 @@ const studentData = selectedStudent
             <p className="text-muted-foreground">Detailed performance analysis for individual students</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={handlePrintReport}
-              disabled={!selectedStudent || isPrinting}
-            >
-              {isPrinting ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Printer className="h-4 w-4" />
-                  Print Report
-                </>
-              )}
-            </Button>
+          <Button
+  variant="outline"
+  size="sm"
+  className="flex items-center gap-1"
+  onClick={() => setIsExportDialogOpen(true)}
+  disabled={!selectedStudent}
+>
+  {isPrinting ? (
+    <>
+      <RefreshCw className="h-4 w-4 animate-spin" />
+      Generating...
+    </>
+  ) : (
+    <>
+      <FileText className="h-4 w-4" />
+      Export Report
+    </>
+  )}
+</Button>
+
            
           </div>
         </div>
@@ -477,6 +475,16 @@ const studentData = selectedStudent
           </>
         )}
       </div>
+      <ExportDialog
+  isOpen={isExportDialogOpen}
+  onClose={() => setIsExportDialogOpen(false)}
+  exportFormat={exportFormat}
+  setExportFormat={setExportFormat}
+  exportOptions={exportOptions}
+  setExportOptions={setExportOptions}
+  studentExams={studentData}
+  examId={Number(selectedExam)}
+/>
     </div>
   )
 }

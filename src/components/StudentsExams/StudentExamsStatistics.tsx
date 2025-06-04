@@ -1,4 +1,3 @@
-"use client"
 
 import { useState } from "react"
 import type { StudentExamType } from "../../models/StudentExam"
@@ -7,8 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
-
-// Import Chart.js
 import {
   Chart as ChartJS,
   CategoryScale,

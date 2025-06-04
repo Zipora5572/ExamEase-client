@@ -13,9 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import StudentsExamsStatistics from "./StudentExamsStatistics"
 import StudentsExamsSettings from "./StudentsExamsSetting"
-import AllStudents from "./AllStudents"
 import UploadStudents from "./UploadStudents"
-import AssignStudents from "./AssignStudents"
 import StudentsExamsList from "./StudentExamsList"
 
 const StudentsExams = () => {
@@ -34,7 +32,6 @@ const StudentsExams = () => {
 
   // New state for student management dialogs
   const [isUploadStudentsOpen, setIsUploadStudentsOpen] = useState(false)
-  const [isAssignStudentsOpen, setIsAssignStudentsOpen] = useState(false)
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -68,14 +65,6 @@ const StudentsExams = () => {
 
   const studentExams = useSelector((state: StoreType) => state.studentExams.examsByExamId)
   const loading = useSelector((state: StoreType) => state.studentExams.loading)
-
-  const handleOpenUploadStudents = () => {
-    setIsUploadStudentsOpen(true)
-  }
-
-  const handleOpenAssignStudents = () => {
-    setIsAssignStudentsOpen(true)
-  }
 
   if (loading && !isRefreshing) {
     return (
@@ -165,13 +154,7 @@ const StudentsExams = () => {
             <StudentsExamsSettings />
           </TabsContent>
 
-          <TabsContent value="students" className="mt-6">
-            <AllStudents
-              studentExams={studentExams}
-              onAssignStudents={handleOpenAssignStudents}
-              onUploadStudents={handleOpenUploadStudents}
-            />
-          </TabsContent>
+        
         </Tabs>
       </div>
 
@@ -189,19 +172,7 @@ const StudentsExams = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Assign Students Dialog */}
-      <Dialog open={isAssignStudentsOpen} onOpenChange={setIsAssignStudentsOpen}>
-        <DialogContent className="sm:max-w-md">
-          <AssignStudents
-           
-            onClose={() => setIsAssignStudentsOpen(false)}
-            onSuccess={() => {
-              setIsAssignStudentsOpen(false)
-              fetchStudentExams()
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+     
     </div>
   )
 }
