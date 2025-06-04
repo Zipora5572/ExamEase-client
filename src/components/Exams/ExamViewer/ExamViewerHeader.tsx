@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button"
 import {
   ArrowLeft,
-  Share2,
   ZoomIn,
   ZoomOut,
   RotateCcw,
@@ -21,8 +20,6 @@ interface ExamViewerHeaderProps {
   handleGoBack: () => void
   zoom: number
   setZoom: (zoom: number) => void
-  isShareDialogOpen: boolean
-  setIsShareDialogOpen: (isOpen: boolean) => void
   isSaving: boolean
   setIsSaving: (isSaving: boolean) => void
   grade: number
@@ -37,7 +34,6 @@ const ExamViewerHeader = ({
   handleGoBack,
   zoom,
   setZoom,
-  setIsShareDialogOpen,
   resetView,
   toggleSettingsPanel,
   saveAnnotatedExam,
@@ -145,15 +141,7 @@ const ExamViewerHeader = ({
             <Settings className="h-4 w-4" />
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setIsShareDialogOpen(true)}
-            className="h-8 w-8 rounded-full"
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-
+       
           <Button
             variant="outline"
             size="sm"

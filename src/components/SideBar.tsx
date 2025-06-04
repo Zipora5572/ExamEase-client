@@ -206,7 +206,7 @@ export default function Sidebar() {
       </nav>
       <div className="p-4 border-t border-gray-200 bg-gray-50">
   {user?.id ? (
-    <UserAccess user={user} />
+    <UserAccess user={user} variant="sidebar" />
   ) : (
     <div className="text-center">
       <p className="text-sm text-gray-500 mb-2">Not signed in</p>

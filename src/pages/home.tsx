@@ -26,7 +26,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link to="/about">
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-red-700">
+                  <Button size="lg" variant="outline" className="bg-white text-red-600 hover:bg-red-5">
                     Learn More
                   </Button>
                 </Link>

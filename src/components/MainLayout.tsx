@@ -16,7 +16,7 @@ const MainLayout = () => {
   }, [dispatch, user])
   return (
     <div className="flex h-screen flex-col bg-[#f9fafb]">
-      <Header isPublicPage={false} />
+      <Header isPublicPage={true} />
       <main className="flex-1 overflow-auto p-4">
         <Outlet />
       </main>

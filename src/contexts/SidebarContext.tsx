@@ -27,8 +27,9 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Determine if we should show the sidebar based on the route
   useEffect(() => {
+
     const publicRoutes = ["/", "/about", "/home", "/authForm"]
-    console.log(location.pathname);
+    console.log("locate",location.pathname);
     
     const shouldShowSidebar = !publicRoutes.includes(location.pathname)
     setShowSidebar(shouldShowSidebar)

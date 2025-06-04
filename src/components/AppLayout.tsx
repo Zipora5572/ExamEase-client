@@ -17,6 +17,9 @@ const AppLayout = () => {
   const location = useLocation()
   const { showSidebar } = useSidebarContext()
 
+  console.log(showSidebar);
+  
+
   useEffect(() => {
     const cookies = document.cookie.split("; ");
     const tokenCookie = cookies.find(row => row.startsWith("JWT="));

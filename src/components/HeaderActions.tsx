@@ -28,7 +28,7 @@ const HeaderActions = ({ isPublicPage, user, handleCreateNew }: HeaderActionsPro
       )}
 
       <a
-        href="https://github.com/Zipora5572/exam-management-app/tree/main/React-App"
+        href="https://github.com/Zipora5572/ExamEase-client/"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center"
@@ -43,7 +43,7 @@ const HeaderActions = ({ isPublicPage, user, handleCreateNew }: HeaderActionsPro
       <HelpCenter />
 
       {user?.id ? (
-        <UserAccess user={user} />
+        <UserAccess user={user} variant="header"/>
       ) : (
         <Link to="/authForm">
           <Button variant="default" size="sm">

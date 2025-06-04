@@ -20,7 +20,6 @@ const ExamFileViewer = () => {
   const [markedAnswers, setMarkedAnswers] = useState<any[]>([])
   const [zoom, setZoom] = useState(1)
   const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
   const [image, setImage] = useState<HTMLImageElement | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [totalPossiblePoints, setTotalPossiblePoints] = useState(100) // Default total points
@@ -335,8 +334,6 @@ const ExamFileViewer = () => {
           handleGoBack={handleGoBack}
           zoom={zoom}
           setZoom={setZoom}
-          isShareDialogOpen={isShareDialogOpen}
-          setIsShareDialogOpen={setIsShareDialogOpen}
           isSaving={isSaving}
           setIsSaving={setIsSaving}
           grade={grade}
