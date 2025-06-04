@@ -43,15 +43,17 @@ const ExamList = () => {
     return matches
   })
 
-  const filteredFolders = folders.filter((folder) => {
-    let matches = true
+  const filteredFolders = statusFilter !== "all"
+  ? [] 
+  : folders.filter((folder) => {
+      let matches = true
 
-    if (filter === "shared") matches = matches && folder.isShared
-    if (filter === "starred") matches = matches && folder.isStarred
-    if (searchQuery) matches = matches && folder.name.toLowerCase().includes(searchQuery.toLowerCase())
+      if (filter === "shared") matches = matches && folder.isShared
+      if (filter === "starred") matches = matches && folder.isStarred
+      if (searchQuery) matches = matches && folder.name.toLowerCase().includes(searchQuery.toLowerCase())
 
-    return matches
-  })
+      return matches
+    })
 
   useEffect(() => {
     if (user?.id) {
@@ -150,10 +152,9 @@ const ExamList = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setStatusFilter("all")}>All Status</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter("draft")}>Draft</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter("grading")}>Grading</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter("completed")}>Completed</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter("in progress")}>In Progress</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("Grading")}>Grading</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("Completed")}>Completed</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("InProgress")}>In Progress</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
