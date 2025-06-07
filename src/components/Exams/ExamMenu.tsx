@@ -122,8 +122,7 @@ const ExamMenu = ({ openModal, row }: ExamMenuProps) => {
       children: (
         <div className="space-y-6">
           <p className="text-sm text-slate-600 leading-relaxed">
-            Upload an Excel file containing the list of students for this exam. Our AI will automatically match students
-            to their exams.
+            Upload an Excel file containing the list of students for this exam.
           </p>
 
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
@@ -135,9 +134,7 @@ const ExamMenu = ({ openModal, row }: ExamMenuProps) => {
               <table className="min-w-full border border-slate-200 text-sm rounded-md overflow-hidden">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">
-                      Student ID
-                    </th>
+                  
                     <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">
                       First Name
                     </th>
@@ -145,38 +142,23 @@ const ExamMenu = ({ openModal, row }: ExamMenuProps) => {
                       Last Name
                     </th>
                     <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">Email</th>
-                    <th className="border border-slate-200 px-4 py-3 text-left font-medium text-slate-700">Class</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="bg-white">
-                    <td className="border border-slate-200 px-4 py-3 text-slate-600">12345</td>
                     <td className="border border-slate-200 px-4 py-3 text-slate-600">John</td>
                     <td className="border border-slate-200 px-4 py-3 text-slate-600">Smith</td>
                     <td className="border border-slate-200 px-4 py-3 text-slate-600">john.smith@example.com</td>
-                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Class A</td>
                   </tr>
                   <tr className="bg-slate-25">
-                    <td className="border border-slate-200 px-4 py-3 text-slate-600">67890</td>
                     <td className="border border-slate-200 px-4 py-3 text-slate-600">Jane</td>
                     <td className="border border-slate-200 px-4 py-3 text-slate-600">Doe</td>
                     <td className="border border-slate-200 px-4 py-3 text-slate-600">jane.doe@example.com</td>
-                    <td className="border border-slate-200 px-4 py-3 text-slate-600">Class B</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div className="mt-4">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs font-medium hover:bg-slate-100 transition-colors"
-                onClick={() => window.open("#", "_blank")}
-              >
-                <Download className="h-3 w-3 mr-2" />
-                Download Template
-              </Button>
-            </div>
+          
           </div>
 
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
